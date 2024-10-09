@@ -1,0 +1,38 @@
+#!/bin/sh -e
+
+parse() {
+    # Transform plain-text/markdown-ish input into HTML and insert it into the template.
+    
+    # Replace < with &lt;
+    sed 's<\\\&lt;g' |
+
+    # [text](url)
+    sed -E 's\[ *([[:alnum:] \&\;\?!,\)\+]*.{0,10}[[:alnum:] \&\;\?!,\)\+-]) *\] *\( *([^ ]+) *"([^"]+)"\)<a href="\2" title="\3">\1<\/a>g' |
+    sed -E 's\[ *([[:alnum:] \&\;\?!,\)\+]*.{0,10}[[:alnum:] \&\;\?!,\)\+]+) *\] *\( *([^ ]+) *\)<a href="\2">\1<\/a>g' |
+    # ![image](url)
+    sed -E 's!\[ *([[:alnum:] \&\;\?!,\)\+]*.{0,10}[[:alnum:] \&\;\?!,\)\+]) *\] *\( *([^ ]+) *\)<img src="\2" alt="\1">g' |
+    # url
+    sed -E "s([^\"\'\>=])(http[s]?://[^[:space:]]*)\1<a href=\2>\2</a>g" |
+    sed -E "s^(http[s]?://[^[:space:]]*)<a href=\1>\1</a>g" |
+
+    # Hacky fix for sed \n errors
+    sed ':a $!{N; ba}; s\n\\ng'
+}
+
+for dir in $(find site -type d); do
+    mkdir -pv docs/${dir#site/}
+done
+
+for file in $(find site -type f -name "*.md"); do
+    output=$(parse < $file)
+    f=${file%.*}
+    base=${f#site/}
+    name=${base%/index}
+    home=${name/index/home}
+    uppername=${home^}
+    cp template.html docs/$base.html
+    sed -i "s(CONTENT)$output" docs/$base.html
+    sed -i "s(TITLE)$home" docs/$base.html
+done
+
+cp site/favicon.ico docs/favicon.ico
