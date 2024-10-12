@@ -15,6 +15,8 @@ parse() {
     sed -E "s([^\"\'\>=])(http[s]?://[^[:space:]]*)\1<a href=\2>\2</a>g" |
     sed -E "s^(http[s]?://[^[:space:]]*)<a href=\1>\1</a>g" |
 
+    sed 's\$\[cate' |
+
     # Hacky fix for sed \n errors
     sed ':a $!{N; ba}; s\n\\ng'
 }
@@ -36,3 +38,4 @@ for file in $(find site -type f -name "*.md"); do
 done
 
 cp site/favicon.ico docs/favicon.ico
+cp site/fsh.js docs/fsh.js

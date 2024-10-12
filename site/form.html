@@ -1,0 +1,49 @@
+<form 
+  class="gform pure-form pure-form-stacked" 
+  method="POST" 
+  action="https://script.google.com/macros/s/AKfycbwPWWny4-bK10yTeU6w-PJlI90NSQ-FN8jGx5vvdNtTHpfP9d6j8n3pgmMi9Tg8aiRe_g/exec"
+>
+<table>
+  <tr>
+    <td class="alnright"><label for="name">Name: </label></td>
+    <td><input type="text" id="name" name="name" value="John Doe"></td>
+  </tr>
+  <tr>
+    <td class="alnright"><label for="email">Github username: </label></td>
+    <td><input type="text" id="email" name="email" value="jdoe937"></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><input type="submit" value="Submit">  <button type="button" onclick="myFunction()">View Registered Users</button></td>
+  </tr>
+</table>
+<div style="display:none" class="thankyou_message"><pre></pre></div></form><table style="display:none" id="viewppl">
+  <tr>
+    <th>Name</th>
+    <th>Github Username</th>
+    <th>Date Registered</th>
+  </tr>
+</table><script>
+function myFunction() {
+  var url = "https://script.google.com/macros/s/AKfycbwPWWny4-bK10yTeU6w-PJlI90NSQ-FN8jGx5vvdNtTHpfP9d6j8n3pgmMi9Tg8aiRe_g/exec";
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url);
+  xhr.responseType = "json";
+  xhr.send();
+
+  var viewppl = document.getElementById("viewppl");
+  
+  xhr.onload = (event) => {
+    viewppl.style.display = "block";
+    for (var i = 0; i < xhr.response.length; i++) {
+      var key = xhr.response[i];
+      var newrow = viewppl.insertRow(-1);
+      var name = newrow.insertCell(0);
+      var uname = newrow.insertCell(1);
+      var date = newrow.insertCell(2);
+      name.innerHTML = key.name + "    ";
+      uname.innerHTML = key.email + "    ";
+      date.innerHTML = key.date + "    ";
+    }
+  };
+}</script><script data-cfasync="false" type="text/javascript" src="fsh.js"></script>
