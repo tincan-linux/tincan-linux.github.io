@@ -62,7 +62,6 @@
       return false;
     }
 
-    disableAllButtons(form);
     var url = form.action;
     var xhr = new XMLHttpRequest();
     xhr.open('POST', url);
