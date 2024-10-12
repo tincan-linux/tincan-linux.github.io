@@ -40,6 +40,19 @@
     .alnright {
         text-align: right;
     }
+
+    .scrollable {
+        height: 150px;
+        overflow-y: scroll;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        position: sticky;
+        background-color: white;
+        z-index: 2;
+        top: 0;
+    }
 </style>
 <div style="display:table;margin:16px auto">
 <div class=c>
@@ -74,24 +87,24 @@ immortalized in the list of users.
 <table>
   <tr>
     <td class="alnright"><label for="name">Name: </label></td>
-    <td><input type="text" id="name" name="name" value="John Doe"></td>
+    <td><input type="text" id="name" name="name"></td>
   </tr>
   <tr>
     <td class="alnright"><label for="email">Github username: </label></td>
-    <td><input type="text" id="email" name="email" value="jdoe937"></td>
+    <td><input type="text" id="email" name="email"></td>
   </tr>
   <tr>
     <td></td>
     <td><input type="submit" value="Submit">  <button type="button" onclick="myFunction()">View Registered Users</button></td>
   </tr>
 </table>
-<div style="display:none" class="thankyou_message"><pre></pre></div></form><table style="display:none" id="viewppl">
+<div style="display:none" class="thankyou_message"><pre></pre></div></form><div class="scrollable" style="display:none" id="viewppl_div"><table style="display:none" id="viewppl">
   <tr>
     <th>Name</th>
     <th>Github Username</th>
     <th>Date Registered</th>
   </tr>
-</table><script>
+</table></div><script>
 function myFunction() {
   var url = "https://script.google.com/macros/s/AKfycbwPWWny4-bK10yTeU6w-PJlI90NSQ-FN8jGx5vvdNtTHpfP9d6j8n3pgmMi9Tg8aiRe_g/exec";
   var xhr = new XMLHttpRequest();
@@ -100,9 +113,11 @@ function myFunction() {
   xhr.send();
 
   var viewppl = document.getElementById("viewppl");
+  var viewppl_div = document.getElementById("viewppl_div");
   
   xhr.onload = (event) => {
     viewppl.style.display = "block";
+    viewppl_div.style.display = "block";
     for (var i = 0; i < xhr.response.length; i++) {
       var key = xhr.response[i];
       var newrow = viewppl.insertRow(-1);
