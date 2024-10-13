@@ -3,6 +3,6 @@
 +------------------------------------------------------------------------------+
 
 Fill out this tiny form to register as a Tin Can Linux user and forever be
-immortalized in the list of users. (note: requires JS to view registered users)
+immortalized in the list of users.``
 
 $[ site/form.html
