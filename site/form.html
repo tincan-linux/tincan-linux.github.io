@@ -16,6 +16,7 @@
 \&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;<input type="submit" value="Submit">  <button type="button" onclick="myFunction()">View Registered Users</button>
 <div style="display:none" class="thankyou_message"><pre></pre></div></form><div class="scrollable" style="display:none" id="viewppl_div"><table style="display:none" id="viewppl">
   <tr>
+    <th class="bordertable">ID #</th>
     <th class="bordertable">Name</th>
     <th class="bordertable">Github Username</th>
     <th class="bordertable">Date Registered</th>
@@ -32,14 +33,16 @@ function myFunction() {
   var viewppl_div = document.getElementById("viewppl_div");
   
   xhr.onload = (event) => {
-    viewppl.style.display = "block";
-    viewppl_div.style.display = "block";
+    viewppl.style.display = "table-cell";
+    viewppl_div.style.display = "inline-table";
     for (var i = 0; i < xhr.response.length; i++) {
       var key = xhr.response[i];
       var newrow = viewppl.insertRow(-1);
-      var name = newrow.insertCell(0);
-      var uname = newrow.insertCell(1);
-      var date = newrow.insertCell(2);
+      var numb = newrow.insertCell(0);
+      var name = newrow.insertCell(1);
+      var uname = newrow.insertCell(2);
+      var date = newrow.insertCell(3);
+      numb.innerHTML = key.id;
       name.innerHTML = key.name;
       uname.innerHTML = key.email;
       date.innerHTML = key.date;
