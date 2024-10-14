@@ -13,11 +13,14 @@
         color: #586e75;
     }
 
-    img,
     .c {
         display: table-cell;
-        max-width: 999px;
         max-width: 80ch;
+    }
+
+    img {
+        display: table-cell;
+        max-width: 999px;
     }
 
     pre {
@@ -44,7 +47,6 @@
     .scrollable {
         height: 150px;
         overflow-y: scroll;
-        border-bottom: 1px solid #ddd;
     }
 
     th {
@@ -55,6 +57,8 @@
 
     th, td {
         text-align: center;
+        padding-left: 12px;
+        padding-right: 12px;
     }
 
     .bordertable {
@@ -62,16 +66,15 @@
         border-collapse: collapse;
     }
 
-    th, td {
-        padding-left: 12px;
-        padding-right: 12px;
+    .center {
+        margin-left: auto;
+        margin-right: auto;
     }
 </style>
-<div style="display:table;margin:16px auto">
-<div class=c>
+<table class="center"><tr>
+<td style="text-align:left"><div class=c>
 <pre style="top:0;position:sticky;user-select:none;padding-right:64px">
-<a href=/ style="color:#cb4b16">
-<link rel="stylesheet" type="text/css" href="/style.css" />Home</a>
+<a href=/ style="color:#cb4b16">Home</a>
 
 <a href=/install.html>Install</a>
 
@@ -81,8 +84,8 @@
 
 <a href=https://github.com/tincan-linux/>GitHub</a>
 
-</pre></div>
-<div class=c><pre>
+</pre></div></td>
+<td style="text-align:left"><div class=c><pre>
 
 
 +------------------------------------------------------------------------------+
@@ -146,4 +149,4 @@ ________________________________________________________________________________
 
 AVS Origami (C) 2024
 
-</pre></div></div>
+</pre></div></td></tr></table>
