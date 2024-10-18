@@ -217,7 +217,7 @@ Run the following to rebuild all packages (and install some new ones):
     linux-headers m4 make mpc mpfr musl rustup zlib
 
 
-=== Set up Linux Kernel $[040]
+=== Set up Linux kernel $[040]
 =============================
 
 This step will detail how to configure, build, and install the Linux kernel.
@@ -333,8 +333,8 @@ are some bits that I found are important to note:
 
       - CONFIG_DRM_I915 for Intel graphics cards
       - CONFIG_DRM_AMDGPU for AMD graphics cards
-      - CONFIG_DRM_SIMPLEDRM + additional firmware for NVIDIA graphics cards
-        (see https://wiki.archlinux.org/title/NVIDIA)
+      - CONFIG_DRM_SIMPLEDRM + additional firmware for NVIDIA graphics cards;
+        see https://wiki.archlinux.org/title/NVIDIA
 
   - Specific hardware, such as WiFi cards, touchpads, etc. may also require
     additional kernel options to be enabled. A good way to see what's needed is
@@ -379,3 +379,211 @@ Execute the following commands to build and install the kernel:
 
 The 'make install' step may throw a LILO error. This is normal and doesn't
 indicate any problems in the build or install process.
+
+
+=== Install more packages $[050]
+===============================
+
+In this section, we will install some more pacakges -- the final ones needed
+before we can make the system bootable.
+
+
+=== Init scripts $[051]
+
+The package 'tincan-base' provides a tiny init script, [$/tincan-linux/init](https://github.com/tincan-linux/init) along
+with some files unique to Tin Can Linux. Install it with the following:
+
+  # arc b tincan-base
+
+
+=== Bootloader $[052]
+
+Tin Can Linux uses [$/limine-bootloader/limine](https://limine-bootloader.org) instead of GRUB ([why?](/wiki/bootloader )) -- install
+it with this command:
+
+  # arc b limine
+
+
+=== Filesystem utilities $[053]
+
+While not strictly required, filesystem utilities may be needed for checking
+disks with 'fsck':
+
+  # arc b e2fsprogs dosfstools
+
+
+=== Networking utilities $[054]
+
+Again, these are not strictly required, but I assume most people want WiFi:
+
+  # arc b dhcpcd openresolv libudev-zero eiwd
+
+
+=== Other optional tools $[055]
+
+These are some other utilities that you may find useful:
+
+  # arc b ssu
+
+
+=== Make the system bootable $[060]
+==================================
+
+Finally, it's time to boot your new, shiny Linux system! Go ahead and exit the
+chroot:
+
+  # exit
+
+
+=== Setup disks $[061]
+
+The first step is to partition the disk that you will be installing Tin Can
+Linux to. You will need at least two partitions (one for boot, one for root) but
+this guide will use three (boot, root, and swap).
+
+First, identify your disk (I use /dev/sda in these examples). Then, for a UEFI
+install, run these commands as root to partition the disks:
+
+  # parted /dev/sda -- mklabel gpt
+  # parted /dev/sda -- mkpart root ext4 512MB -8GB
+  # parted /dev/sda -- mkpart swap linux-swap -8GB 100%
+  # parted /dev/sda -- mkpart ESP fat32 1MB 512MB
+  # parted /dev/sda -- set 3 esp on
+
+
+And for a BIOS install:
+
+  # parted /dev/sda -- mklabel msdos
+  # parted /dev/sda -- mkpart primary 512MB -8GB
+  # parted /dev/sda -- mkpart primary linux-swap -8GB 100%
+  # parted /dev/sda -- mkpart primary fat32 1MB 512MB
+  # parted /dev/sda -- set 3 boot on
+
+
+Feel free to change these partition sizes as you see fit, or add other
+partitions (for example, some users like to have a separate home partition).
+
+Next, format these partitions appropriately:
+
+  # mkfs.ext4 -L tincan /dev/sda1
+  # mkswap -L swap /dev/sda2
+  # mkfs.fat -F 32 -n boot /dev/sda3
+
+
+Finally, mount the root and boot partitions:
+
+  # mount /dev/sda1 /mnt
+  # mkdir -pv /mnt/boot
+  # mount /dev/sda3 /mnt/boot
+
+
+=== Install Tin Can to disk $[062]
+
+To install your shiny new distro, simply copy the contents of sysroot/ to /mnt:
+
+  # cp -R sysroot/* /mnt/
+
+
+=== Install bootloader $[063]
+
+The final step is to install the bootloader. First, re-enter the chroot with:
+
+  # ./arc-chroot /mnt
+
+
+Then, for a BIOS install (run from the chroot):
+
+  # cp /usr/share/limine/limine-bios.sys /boot/
+  # limine bios-install /dev/sda
+
+
+Or for a UEFI install:
+
+  # mkdir -pv /boot/EFI/BOOT
+  # cp /usr/share/limine/BOOTX64.EFI /boot/EFI/BOOT/
+
+
+Next, create /boot/limine.conf with this content:
+
+  timeout: 5
+
+  /Tin Can Linux
+      protocol: linux
+      kernel_path: boot():/vmlinuz-[VERSION]
+      kernel_cmdline: root=UUID=xxxx-xx--xxx ro loglevel=3 rootwait quiet
+
+
+To get the UUID of your root partition, simply run 'blkid'. You can also replace
+the 'UUID=xxxx' part with '/dev/sda1' but this is less reliable than using the
+disk's UUID.
+
+
+And that's it! Tin Can Linux should now be installed. Exit the chroot, then
+reboot to enter your shiny new system:
+
+  # exit
+  # reboot now
+
+
+Oh, what's that? It didn't work? Here are some reasons why:
+
+  - It doesn't even reach the bootloader:
+      - You may have secure boot enabled.
+
+  - It gets to the bootloader, but hangs at a black screen:
+      - Congratulations, your kernel configuration didn't work! Go back to $[044]
+        and play around with some stuff.
+
+
+If it did work, and you reach a login prompt, then congratulations! Enjoy your
+very own scrappy distro!
+
+
+=== Post installation $[070]
+===========================
+
+Now that you've booted into Tin Can Linux, here's some stuff you can do:
+
+
+=== Set a root password $[071]
+
+PLEASE DO THIS. IT'S A SECURITY RISK IF YOU DON'T.
+
+  # passwd root
+
+
+=== Create a normal user $[072]
+
+Avoid accidentally wrecking your system:
+
+  # adduser [USER]
+  # passwd [USER]
+
+
+=== Graphical environment $[073]
+
+It's not here yet. Sorry
+
+
+=== Get counted $[074]
+
+Now that you're a user of Tin Can Linux, head on over to [@/register](/register) to get
+counted and immortalize yourself in the Tin Can Linux user list! You can also
+see who else is using Tin Can Linux.
+
+
+=== Resources
+=============
+
+These are some resources used throughout the making of this guide, in no
+particular order:
+
+  - https://www.linuxfromscratch.org
+  - https://github.com/firasuke/mussel
+  - https://kisslinux.github.io
+  - https://nixos.org/manual/nixos/stable
+  - https://wiki.archlinux.org/title/Limine
+  - https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Kernel
+  - https://wiki.gentoo.org/wiki/Framework_Laptop_13
+  - https://wiki.archlinux.org/title/Kernel
+  - https://wiki.archlinux.org/title/NVIDIA
