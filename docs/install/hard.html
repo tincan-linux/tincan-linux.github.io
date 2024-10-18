@@ -274,18 +274,18 @@ time, we will rebuild all the packages in the system.
 
 It may be helpful to set the following compiler flags:
 
-- CFLAGS: Setting one of '-O2', '-Os', or '-O3' can be used to optimize the
-  binareies that are produced.
+  - CFLAGS: Setting one of '-O2', '-Os', or '-O3' can be used to optimize the
+    binareies that are produced.
 
-- CFLAGS: Setting '-pipe' can speed up compilation at the cost of higher memory
-  usage.
+  - CFLAGS: Setting '-pipe' can speed up compilation at the cost of higher
+    memory usage.
 
-- CFLAGS: Setting '-march=native' makes the compiler use processor-specific
-  optimizations. Omit this if you are planning to create a portable install
-  (e.g. on a thumb drive)
+  - CFLAGS: Setting '-march=native' makes the compiler use processor-specific
+    optimizations. Omit this if you are planning to create a portable install
+    (e.g. on a thumb drive)
 
-- MAKEFLAGS: Setting '-j$(nproc)' will enable builds to use all available CPU
-  cores. However, this can make it harder to track down compile errors.
+  - MAKEFLAGS: Setting '-j$(nproc)' will enable builds to use all available CPU
+    cores. However, this can make it harder to track down compile errors.
 
 
 With this in mind, add the following lines to /etc/profile:
@@ -309,6 +309,37 @@ Run the following to rebuild all packages (and install some new ones):
 
 This step will detail how to configure, build, and install the Linux kernel.
 
+
+=== Download kernel sources <span id=041>[<a class=t href=#041>041</a>]</span>
+
+First, you will need to select a kernel. There are a few common variants:
+
+  - Vanilla kernel. Nothing special.
+  - Hardened kernel. A fork of the kernel focused on security.
+  - Long term kernel. Designed for long-term support and server usage.
+  - Zen kernel. An effort by kernel hackers to improve the vanilla kernel.
+
+
+There are also some other less common kernels; see <a href="https://wiki.archlinux.org/title/Kernel">this Arch Wiki article</a> for
+more information.
+
+The kernel sources can then be obtained from one of these URLs, depending
+on which variant you want to use:
+
+  - Vanilla: <a href=https://www.kernel.org/>https://www.kernel.org/</a>
+  - Hardened: <a href=https://github.com/anthraxx/linux-hardened>https://github.com/anthraxx/linux-hardened</a>
+  - Long term: <a href=https://www.kernel.org/>https://www.kernel.org/</a>
+  - Zen: <a href=https://github.com/zen-kernel/zen-kernel>https://github.com/zen-kernel/zen-kernel</a>
+
+
+Then download and extract it with the following:
+
+  # curl -fLO [KERNEL_SOURCE]
+  # tar xf [KERNEL_SOURCE]
+  # cd [KERNEL_SOURCE]
+
+
+=== Download firmware blobs <span id=042>[<a class=t href=#042>042</a>]</span>
 
 
 ________________________________________________________________________________
