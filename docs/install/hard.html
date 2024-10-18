@@ -323,8 +323,8 @@ First, you will need to select a kernel. There are a few common variants:
 There are also some other less common kernels; see <a href="https://wiki.archlinux.org/title/Kernel">this Arch Wiki article</a> for
 more information.
 
-The kernel sources can then be obtained from one of these URLs, depending
-on which variant you want to use:
+The kernel sources can then be obtained from one of these URLs, depending on
+which variant you want to use:
 
   - Vanilla: <a href=https://www.kernel.org/>https://www.kernel.org/</a>
   - Hardened: <a href=https://github.com/anthraxx/linux-hardened>https://github.com/anthraxx/linux-hardened</a>
@@ -340,6 +340,132 @@ Then download and extract it with the following:
 
 
 === Download firmware blobs <span id=042>[<a class=t href=#042>042</a>]</span>
+
+It is likely that your hardware may need some additional firmware that isn't
+provided in the kernel. Some of this firmware can be found at this mirror:
+
+  <a href=https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git>https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git</a>
+
+
+Other firmware, such as Intel Microcode, may need to be obtained from other
+sources. See <a href="/install/kconfig">@/install/kconfig</a> for more detailed info on selecting and
+obtaining the correct firmware for your hardware.
+
+After obtaining the necessary firmware, extract the tarballs and copy required
+files to /usr/lib/firmware:
+
+  # tar xf [FIRMWARE]
+  # mkdir -pv /usr/lib/firmware
+  # cp -R ./path/to/blob /usr/lib/firmware/
+
+
+=== Install required packages <span id=043>[<a class=t href=#043>043</a>]</span>
+
+Some additional packages are required beyond the ones installed so far in order
+to compile the kernel. Install them now:
+
+  # arc b libelf pkgconf
+
+  For menuconfig support (highly recommended):
+
+  # arc b ncurses
+
+
+=== Configure the kernel <span id=044>[<a class=t href=#044>044</a>]</span>
+
+This is one of the most critical (and also tricky) steps of the process. Doing
+something wrong here can prevent your system from booting. While there are many
+ways to go about configuring the kernel, I will be presenting one method here
+which has worked for me.
+
+Start with a default config, which should include some sane default settings:
+
+  # make defconfig
+
+
+Next, start the menuconfig:
+
+  # make menuconfig
+
+
+This will open a blue TUI where you can configure the kernel options. While
+there isn't a one-size-fits-all procedure for this part of the process, here
+are some bits that I found are important to note:
+
+  - YOU NEED GRAPHICS DRIVERS. One of the most common pitfalls with kernel
+    configuration is leaving out a graphics driver, usually for the framebuffer.
+    Your system probably will not boot without these options:
+
+      - CONFIG_FB
+      - CONFIG_FB_CORE
+      - CONFIG_FB_DEVICE
+      - CONFIG_FB_NOTIFY
+      - CONFIG_FRAMEBUFFER_CONSOLE
+      - CONFIG_SYSFB
+      - CONFIG_SYSFB_SIMPLEFB
+
+    Additionally, some combination of these may be needed:
+
+      - CONFIG_FB_EFI
+      - CONFIG_FB_VESA
+      - CONFIG_FB_VGA16
+      - CONFIG_DRM_FBDEV_EMULATION
+
+    There may be some other ones beyond these that I haven't covered. A good
+    check is to do 'grep "FB" .config && grep "FRAMEBUFFER" .config' to see what
+    other framebuffer-related graphics drivers are available.
+
+    In additon to these, graphics drivers for specific graphics cards are also
+    probably needed, such as:
+
+      - CONFIG_DRM_I915 for Intel graphics cards
+      - CONFIG_DRM_AMDGPU for AMD graphics cards
+      - CONFIG_DRM_SIMPLEDRM + additional firmware for NVIDIA graphics cards
+        (see <a href=https://wiki.archlinux.org/title/NVIDIA)>https://wiki.archlinux.org/title/NVIDIA)</a>
+
+  - Specific hardware, such as WiFi cards, touchpads, etc. may also require
+    additional kernel options to be enabled. A good way to see what's needed is
+    to run 'lspci' and 'lsmod' from the live environment:
+
+      - 'lspci' gives information on installed hardware devices, so that you can
+        look up what drivers are needed for your specific model.
+
+      - 'lsmod' tells you what kernel modules are currently loaded. This can
+        point out some options that need to be enabled in the kernel (just
+        google the module name to find its equivalent in the kernel menuconfig)
+
+  - The Gentoo Wiki is a great source of information about kernel configuration.
+    Try looking up your model or laptop brand to see if it has a dedicated wiki
+    page with kernel configuration info. For example, I found <a href="https://wiki.gentoo.org/wiki/Framework_Laptop_13">this one</a> for the
+    Framework Laptop that saved me a lot of trouble.
+
+  - If you're stuck, Reddit is your friend! There's probably someone out there
+    who had the same problem you do, and if not, there are plenty of communities
+    where you could ask a question and see if someone can help you get to the
+    answer.
+
+  - Also check out <a href="/install/kconfig">@/install/kconfig</a> which serves as a place for all things
+    related to kernel configuration. Tips, tricks, etc. Although it's looking
+    kinda empty right now :(
+
+
+Once that's done, change all modules to baked-in (since modules are yucky):
+
+  # sed -i 's/=m/=y/g' .config
+
+
+=== Build and install the kernel <span id=045>[<a class=t href=#045>045</a>]</span>
+
+Execute the following commands to build and install the kernel:
+
+  # make
+  # make install
+  # mv /boot/vmlinuz /boot/vmlinuz-[VERSION]
+  # mv /boot/System.map /boot/System.map-[VERSION]
+
+
+The 'make install' step may throw a LILO error. This is normal and doesn't
+indicate any problems in the build or install process.
 
 
 ________________________________________________________________________________
