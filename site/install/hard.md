@@ -114,7 +114,6 @@ with arc, the package manager (see [@/wiki/arc](/wiki/arc) for more information 
 The packages must be built in a specific order for everything to work as
 expected. Perform the following (in this exact order):
 
-  # arc sh
   # arc b linux-headers
   # arc b musl
   # arc b m4
@@ -128,3 +127,98 @@ expected. Perform the following (in this exact order):
 
 Hopefully, everything will go well. If not, exit the chroot, remove the sysroot/
 directory, and start back at $[012].
+
+From this point on, the guide is very similar to the easy method. As the
+maintainer of Tin Can Linux, this is where I would clean up some stuff and
+create a tarball of the rootfs.
+
+
+=== Finish repository setup $[020]
+=================================
+
+In this step, we will finish proper setup of the official repositories.
+
+
+=== Obtain the repositories $[021]
+
+Temporarily exit the chroot environment, as we haven't yet installed git inside
+the rootfs:
+
+  # exit
+
+
+This will unmount the filesystems that were previously mounted and drop you back
+into the host machine's shell. From there, we can clone the remaining repos:
+
+  $ git clone https://github.com/tincan-linux/repo-extra sysroot/var/repo/extra
+  $ (repo-xorg is not here yet)
+
+
+Now re-enter the chroot:
+
+  # ./arc-chroot
+
+
+=== Set $ARC_PATH $[022]
+
+The environment variable $ARC_PATH is used by arc to determine where to find the
+repositories. This allows you to install repositories to any location on the
+system.
+
+To let arc know where to find the official repositories, add this line to
+/etc/profile:
+
+  export ARC_PATH=/var/repo/core:/var/repo/extra
+
+
+From now on, arc will look for packages in /var/repo/core and /var/repo/extra.
+See [@/wiki/arc](/wiki/arc) to learn more about how $ARC_PATH works.
+
+
+=== Rebuild the system (again) $[030]
+====================================
+
+In order to ensure that all packages have been built with the latest versions
+of dependencies, and to install some packages that were not included the first
+time, we will rebuild all the packages in the system.
+
+
+=== Set compiler flags $[031]
+
+It may be helpful to set the following compiler flags:
+
+- CFLAGS: Setting one of '-O2', '-Os', or '-O3' can be used to optimize the
+  binareies that are produced.
+
+- CFLAGS: Setting '-pipe' can speed up compilation at the cost of higher memory
+  usage.
+
+- CFLAGS: Setting '-march=native' makes the compiler use processor-specific
+  optimizations. Omit this if you are planning to create a portable install
+  (e.g. on a thumb drive)
+
+- MAKEFLAGS: Setting '-j$(nproc)' will enable builds to use all available CPU
+  cores. However, this can make it harder to track down compile errors.
+
+
+With this in mind, add the following lines to /etc/profile:
+
+  export CFLAGS="-O3 -pipe -march=native"
+  export CPPFLAGS="$CFLAGS"
+  export CXXFLAGS="$CFLAGS"
+  export MAKEFLAGS="-j$(nproc)"
+
+
+=== Rebuild all packages $[032]
+
+Run the following to rebuild all packages (and install some new ones):
+
+  # arc b arc binutils bison busybox certs flex gcc git gmp \\
+    linux-headers m4 make mpc mpfr musl rustup zlib
+
+
+=== Set up Linux Kernel $[040]
+=============================
+
+This step will detail how to configure, build, and install the Linux kernel.
+

@@ -41,5 +41,3 @@ done
 
 cp site/favicon.ico docs/favicon.ico
 cp site/fsh.js docs/fsh.js
-cp site/CozetteVector.ttf docs/CozetteVector.ttf
-cp site/CozetteVector.woff docs/CozetteVector.woff

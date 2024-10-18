@@ -6,16 +6,9 @@
 <meta name=Description content="A personal website">
 <meta name=viewport content="width=device-width,initial-scale=1">
 <style>
-    @font-face {
-        font-family: 'cozette';
-        src: url('/CozetteVector.ttf') format('truetype'),
-             url('/CozetteVector.woff') format('woff');
-    }
-
     body {
         overflow-y: scroll;
-        font-size: 13px;
-        font-family: 'cozette';
+        font: 14px monospace, monospace;
         background-color: #fdfaf6;
         color: #586e75;
     }
@@ -75,7 +68,7 @@
 </style>
 <div style="display:table;margin:16px auto">
 <div class=c>
-<pre style="top:0;position:sticky;user-select:none;padding-right:64px;font-family:cozette">
+<pre style="top:0;position:sticky;user-select:none;padding-right:64px">
 
 
 <a href=/ style="color:#cb4b16">Home</a>
@@ -89,7 +82,7 @@
 <a href=https://github.com/tincan-linux>GitHub</a>
 
 </pre></div>
-<div class=c><pre style="font-family: cozette">
+<div class=c><pre>
 
 
 +------------------------------------------------------------------------------+
@@ -208,7 +201,6 @@ with arc, the package manager (see <a href="/wiki/arc">@/wiki/arc</a> for more i
 The packages must be built in a specific order for everything to work as
 expected. Perform the following (in this exact order):
 
-  # arc sh
   # arc b linux-headers
   # arc b musl
   # arc b m4
@@ -222,6 +214,101 @@ expected. Perform the following (in this exact order):
 
 Hopefully, everything will go well. If not, exit the chroot, remove the sysroot/
 directory, and start back at <span id=012>[<a class=t href=#012>012</a>]</span>.
+
+From this point on, the guide is very similar to the easy method. As the
+maintainer of Tin Can Linux, this is where I would clean up some stuff and
+create a tarball of the rootfs.
+
+
+=== Finish repository setup <span id=020>[<a class=t href=#020>020</a>]</span>
+=================================
+
+In this step, we will finish proper setup of the official repositories.
+
+
+=== Obtain the repositories <span id=021>[<a class=t href=#021>021</a>]</span>
+
+Temporarily exit the chroot environment, as we haven't yet installed git inside
+the rootfs:
+
+  # exit
+
+
+This will unmount the filesystems that were previously mounted and drop you back
+into the host machine's shell. From there, we can clone the remaining repos:
+
+  $ git clone <a href=https://github.com/tincan-linux/repo-extra>https://github.com/tincan-linux/repo-extra</a> sysroot/var/repo/extra
+  $ (repo-xorg is not here yet)
+
+
+Now re-enter the chroot:
+
+  # ./arc-chroot
+
+
+=== Set $ARC_PATH <span id=022>[<a class=t href=#022>022</a>]</span>
+
+The environment variable $ARC_PATH is used by arc to determine where to find the
+repositories. This allows you to install repositories to any location on the
+system.
+
+To let arc know where to find the official repositories, add this line to
+/etc/profile:
+
+  export ARC_PATH=/var/repo/core:/var/repo/extra
+
+
+From now on, arc will look for packages in /var/repo/core and /var/repo/extra.
+See <a href="/wiki/arc">@/wiki/arc</a> to learn more about how $ARC_PATH works.
+
+
+=== Rebuild the system (again) <span id=030>[<a class=t href=#030>030</a>]</span>
+====================================
+
+In order to ensure that all packages have been built with the latest versions
+of dependencies, and to install some packages that were not included the first
+time, we will rebuild all the packages in the system.
+
+
+=== Set compiler flags <span id=031>[<a class=t href=#031>031</a>]</span>
+
+It may be helpful to set the following compiler flags:
+
+- CFLAGS: Setting one of '-O2', '-Os', or '-O3' can be used to optimize the
+  binareies that are produced.
+
+- CFLAGS: Setting '-pipe' can speed up compilation at the cost of higher memory
+  usage.
+
+- CFLAGS: Setting '-march=native' makes the compiler use processor-specific
+  optimizations. Omit this if you are planning to create a portable install
+  (e.g. on a thumb drive)
+
+- MAKEFLAGS: Setting '-j$(nproc)' will enable builds to use all available CPU
+  cores. However, this can make it harder to track down compile errors.
+
+
+With this in mind, add the following lines to /etc/profile:
+
+  export CFLAGS="-O3 -pipe -march=native"
+  export CPPFLAGS="$CFLAGS"
+  export CXXFLAGS="$CFLAGS"
+  export MAKEFLAGS="-j$(nproc)"
+
+
+=== Rebuild all packages <span id=032>[<a class=t href=#032>032</a>]</span>
+
+Run the following to rebuild all packages (and install some new ones):
+
+  # arc b arc binutils bison busybox certs flex gcc git gmp \
+    linux-headers m4 make mpc mpfr musl rustup zlib
+
+
+=== Set up Linux Kernel <span id=040>[<a class=t href=#040>040</a>]</span>
+=============================
+
+This step will detail how to configure, build, and install the Linux kernel.
+
 
 
 ________________________________________________________________________________
