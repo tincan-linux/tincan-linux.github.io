@@ -6,9 +6,16 @@
 <meta name=Description content="A personal website">
 <meta name=viewport content="width=device-width,initial-scale=1">
 <style>
+    @font-face {
+        font-family: 'cozette';
+        src: url('/CozetteVector.ttf') format('truetype'),
+             url('/CozetteVector.woff') format('woff');
+    }
+
     body {
         overflow-y: scroll;
-        font: 14px monospace, monospace;
+        font-size: 13px;
+        font-family: 'cozette';
         background-color: #fdfaf6;
         color: #586e75;
     }
@@ -68,7 +75,7 @@
 </style>
 <div style="display:table;margin:16px auto">
 <div class=c>
-<pre style="top:0;position:sticky;user-select:none;padding-right:64px">
+<pre style="top:0;position:sticky;user-select:none;padding-right:64px;font-family:cozette">
 
 
 <a href=/ style="color:#cb4b16">Home</a>
@@ -82,14 +89,25 @@
 <a href=https://github.com/tincan-linux>GitHub</a>
 
 </pre></div>
-<div class=c><pre>
+<div class=c><pre style="font-family: cozette">
 
 
 +------------------------------------------------------------------------------+
 |  Tin Can Linux install guide.                                                |
 +------------------------------------------------------------------------------+
 
-Coming soon.
+There are two main methods to install Tin Can Linux to your system:
+
+  - <a href="easy.html">The easy way</a> via a rootfs tarball. This is similar to the installation
+    procedure for Kiss Linux. (Note: not currently available)
+
+  - <a href="hard.html">The hard way</a> by bootstrapping the system yourself. This is useful if you
+    want to install Tin Can Linux on an architecture other than x86-64 or if you
+    want greater control over the installation procedure.
+
+The easy way is not currently available since I haven't released a rootfs
+tarball. If you want to try out Tin Can Linux in its current state, you must use
+the hard way.
 
 
 ________________________________________________________________________________

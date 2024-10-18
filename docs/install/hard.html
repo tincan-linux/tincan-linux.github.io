@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang=en>
+<head><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"></head>
+<title>Tin Can Linux - install/hard</title>
+<meta charset=utf-8>
+<meta name=Description content="A personal website">
+<meta name=viewport content="width=device-width,initial-scale=1">
+<style>
+    @font-face {
+        font-family: 'cozette';
+        src: url('/CozetteVector.ttf') format('truetype'),
+             url('/CozetteVector.woff') format('woff');
+    }
+
+    body {
+        overflow-y: scroll;
+        font-size: 13px;
+        font-family: 'cozette';
+        background-color: #fdfaf6;
+        color: #586e75;
+    }
+
+    .c {
+        display: table-cell;
+        max-width: 80ch;
+    }
+
+    img {
+        display: table-cell;
+        max-width: 999px;
+    }
+
+    pre {
+        margin: 0;
+        overflow-x: hidden;
+    }
+
+    a {
+        text-decoration: none;
+        color: #2aa198;
+    }
+
+    @media(max-width:999px) {
+        .c {
+            display: block;
+            font-size: 1.94vw;
+        }
+    }
+
+    .alnright {
+        text-align: right;
+    }
+
+    .scrollable {
+        height: 150px;
+        overflow-y: scroll;
+    }
+
+    th {
+        position: sticky;
+        z-index: 2;
+        top: 0;
+    }
+
+    th, td {
+        text-align: center;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .bordertable {
+        border: 1px solid #586e75;
+        border-collapse: collapse;
+    }
+</style>
+<div style="display:table;margin:16px auto">
+<div class=c>
+<pre style="top:0;position:sticky;user-select:none;padding-right:64px;font-family:cozette">
+
+
+<a href=/ style="color:#cb4b16">Home</a>
+
+<a href=/install>Install</a>
+
+<a href=/wiki>Wiki</a>
+
+<a href=/register.html>Register</a>
+
+<a href=https://github.com/tincan-linux>GitHub</a>
+
+</pre></div>
+<div class=c><pre style="font-family: cozette">
+
+
++------------------------------------------------------------------------------+
+|  Tin Can Linux installation guide (the hard way)                             |
++------------------------------------------------------------------------------+
+
+This is a guide to building Tin Can Linux from the ground up by bootstrapping
+the system yourself. This is a somewhat advanced process, so make sure you know
+what you're doing! Unless you want to tinker with the process or need to build
+for a different architecture, the easy method is recommended.
+
+
+=== Contents
+============
+
+<a href="#010">[010</a>] Bootstrapping the system
+  <a href="#011">[011</a>] Obtain sources
+  <a href="#012">[012</a>] Initial bootstrap
+  <a href="#013">[013</a>] Obtain the repositories
+  <a href="#014">[014</a>] Enter chroot environment
+  <a href="#015">[015</a>] Rebuild the system
+
+<a href="#020">[020</a>] Finish repository setup
+  <a href="#021">[021</a>] Obtain the repositories
+  <a href="#022">[022</a>] Set $ARC_PATH
+
+<a href="#030">[030</a>] Rebuild the system (again)
+  <a href="#031">[031</a>] Set compiler flags
+  <a href="#032">[032</a>] Rebuild all packages
+
+<a href="#040">[040</a>] Set up Linux kernel
+  <a href="#041">[041</a>] Download kernel sources
+  <a href="#042">[042</a>] Download firmware blobs
+  <a href="#043">[043</a>] Install required packages
+  <a href="#044">[044</a>] Configure the kernel
+  <a href="#045">[045</a>] Build and install the kernel
+
+<a href="#050">[050</a>] Install more packages
+  <a href="#051">[051</a>] Init scripts
+  <a href="#052">[052</a>] Bootloader
+  <a href="#053">[053</a>] Filesystem utilities
+  <a href="#054">[054</a>] Networking utilities
+  <a href="#055">[055</a>] Other optional tools
+
+<a href="#060">[060</a>] Make the system bootable
+  <a href="#061">[061</a>] Setup disks
+  <a href="#062">[062</a>] Install Tin Can to disk
+  <a href="#063">[063</a>] Install bootloader
+
+<a href="#070">[070</a>] Post installation
+  <a href="#071">[071</a>] Set root password
+  <a href="#072">[072</a>] Create a normal user
+  <a href="#073">[073</a>] Graphical environment
+  <a href="#074">[074</a>] Get counted
+
+
+=== Bootstrapping the system <span id=010>[<a class=t href=#010>010</a>]</span>
+==================================
+
+This step involves building a preliminary rootfs which you can enter via a
+chroot environment.
+
+=== Obtain sources <span id=011>[<a class=t href=#011>011</a>]</span>
+
+Clone the main git repo, <a href="https://github.com/tincan-linux/tincan">$/tincan-linux/tincan</a>, with the following command:
+
+  $ git clone --recurse-submodules <a href=https://github.com/tincan-linux/tincan>https://github.com/tincan-linux/tincan</a>
+
+
+This will obtain the bootstrap scripts along with the required submodules (the
+bootstrap process uses <a href="https://github.com/firasuke/mussel">$/firasuke/mussel</a> to build an initial cross compiler
+toolchain)
+
+Then cd into this directory.
+
+
+=== Initial bootstrap <span id=012>[<a class=t href=#012>012</a>]</span>
+
+To perform the initial bootstrap, simply run:
+
+  $ ./bootstrap
+
+
+This (should) generate an initial root filesystem from which the distribution
+will be built.
+
+
+=== Obtain the repositories <span id=013>[<a class=t href=#013>013</a>]</span>
+
+For this initial rootfs, only <a href="https://github.com/tincan-linux/repo-core">$/tincan-linux/repo-core</a> is required. Clone it
+into the rootfs with:
+
+  $ mkdir -pv sysroot/var/repo
+  $ git clone <a href=https://github.com/tincan-linux/repo-core>https://github.com/tincan-linux/repo-core</a> sysroot/var/repo/core
+
+
+=== Enter chroot environment <span id=014>[<a class=t href=#014>014</a>]</span>
+
+The next step is to enter a chroot environment with sysroot/ as the new root.
+For convenience, a modified version of kiss-chroot is provided; to enter the
+chroot, execute the following (with root privileges):
+
+  # ./arc-chroot sysroot
+
+
+If all goes well, you should be presented with some lines of text that indicate
+filesystems being mounted, followed by a shell prompt.
+
+
+=== Rebuild the system <span id=015>[<a class=t href=#015>015</a>]</span>
+
+Once inside the chroot environment, you must rebuild all the packages, since
+mussel does not use the latest versions, and also to start tracking packages
+with arc, the package manager (see <a href="/wiki/arc">@/wiki/arc</a> for more information on it)
+
+The packages must be built in a specific order for everything to work as
+expected. Perform the following (in this exact order):
+
+  # arc sh
+  # arc b linux-headers
+  # arc b musl
+  # arc b m4
+  # arc b binutils
+  # arc b gcc
+  # arc b make
+  # arc b busybox
+  # arc b rustup
+  # arc b arc
+
+
+Hopefully, everything will go well. If not, exit the chroot, remove the sysroot/
+directory, and start back at <span id=012>[<a class=t href=#012>012</a>]</span>.
+
+
+________________________________________________________________________________
+
+AVS Origami (C) 2024
+
+</pre></div></div>

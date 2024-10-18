@@ -7,15 +7,17 @@ parse() {
     sed 's<\\\&lt;g' |
 
     # [text](url)
-    sed -E 's\[ *([[:alnum:] \&\;\?!,\)\+]*.{0,10}[[:alnum:] \&\;\?!,\)\+-]) *\] *\( *([^ ]+) *"([^"]+)"\)<a href="\2" title="\3">\1<\/a>g' |
-    sed -E 's\[ *([[:alnum:] \&\;\?!,\)\+]*.{0,10}[[:alnum:] \&\;\?!,\)\+]+) *\] *\( *([^ ]+) *\)<a href="\2">\1<\/a>g' |
+    sed -E 's\[ *([[:alnum:] \$\&\;\?!,-/\)\+]*.{0,10}[[:alnum:] \&\;\?!,\)\+-]) *\] *\( *([^ ]+) *"([^"]+)"\)<a href="\2" title="\3">\1<\/a>g' |
+    sed -E 's\[ *([[:alnum:] \$\&\;\?!,-/\)\+]*.{0,10}[[:alnum:] \&\;\?!,\)\+]+) *\] *\( *([^ ]+) *\)<a href="\2">\1<\/a>g' |
     # ![image](url)
-    sed -E 's!\[ *([[:alnum:] \&\;\?!,\)\+]*.{0,10}[[:alnum:] \&\;\?!,\)\+]) *\] *\( *([^ ]+) *\)<img src="\2" alt="\1">g' |
+    sed -E 's!\[ *([[:alnum:] \$\&\;\?!,-/\)\+]*.{0,10}[[:alnum:] \&\;\?!,\)\+]) *\] *\( *([^ ]+) *\)<img src="\2" alt="\1">g' |
     # url
     sed -E "s([^\"\'\>=])(http[s]?://[^[:space:]]*)\1<a href=\2>\2</a>g" |
     sed -E "s^(http[s]?://[^[:space:]]*)<a href=\1>\1</a>g" |
-
-    sed 's\$\[cate' |
+    # $[section]
+    sed -E 's\$\[ *([[:alnum:] \&\;\?!,\)\+]*.{0,10}[[:alnum:] \&\;\?!,\)\+]) *\]<span id=\1>\[<a class=t href=#\1>\1</a>\]</span>g' |
+    # include html files with $[ file.html
+    sed 's\$\[ cat e' |
 
     # Hacky fix for sed \n errors
     sed ':a $!{N; ba}; s\n\\ng'
@@ -39,3 +41,5 @@ done
 
 cp site/favicon.ico docs/favicon.ico
 cp site/fsh.js docs/fsh.js
+cp site/CozetteVector.ttf docs/CozetteVector.ttf
+cp site/CozetteVector.woff docs/CozetteVector.woff
