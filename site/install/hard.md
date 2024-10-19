@@ -63,7 +63,11 @@ chroot environment.
 
 Clone the main git repo, [$/tincan-linux/tincan](https://github.com/tincan-linux/tincan), with the following command:
 
+--------------------------------------------------------------------------------
+
   $ git clone --recurse-submodules https://github.com/tincan-linux/tincan
+
+--------------------------------------------------------------------------------
 
 
 This will obtain the bootstrap scripts along with the required submodules (the
@@ -77,7 +81,11 @@ Then cd into this directory.
 
 To perform the initial bootstrap, simply run:
 
+--------------------------------------------------------------------------------
+
   $ ./bootstrap
+
+--------------------------------------------------------------------------------
 
 
 This (should) generate an initial root filesystem from which the distribution
@@ -89,9 +97,12 @@ will be built.
 For this initial rootfs, only [$/tincan-linux/repo-core](https://github.com/tincan-linux/repo-core) is required. Clone it
 into the rootfs with:
 
+--------------------------------------------------------------------------------
+
   $ mkdir -pv sysroot/var/repo
   $ git clone https://github.com/tincan-linux/repo-core sysroot/var/repo/core
 
+--------------------------------------------------------------------------------
 
 === Enter chroot environment $[014]
 
@@ -99,7 +110,11 @@ The next step is to enter a chroot environment with sysroot/ as the new root.
 For convenience, a modified version of kiss-chroot is provided; to enter the
 chroot, execute the following (with root privileges):
 
+--------------------------------------------------------------------------------
+
   # ./arc-chroot sysroot
+
+--------------------------------------------------------------------------------
 
 
 If all goes well, you should be presented with some lines of text that indicate
@@ -115,6 +130,8 @@ with arc, the package manager (see [@/wiki/arc](/wiki/arc) for more information 
 The packages must be built in a specific order for everything to work as
 expected. Perform the following (in this exact order):
 
+--------------------------------------------------------------------------------
+
   # arc b linux-headers
   # arc b musl
   # arc b m4
@@ -124,6 +141,8 @@ expected. Perform the following (in this exact order):
   # arc b busybox
   # arc b rustup
   # arc b arc
+
+--------------------------------------------------------------------------------
 
 
 Hopefully, everything will go well. If not, exit the chroot, remove the sysroot/
@@ -145,19 +164,31 @@ In this step, we will finish proper setup of the official repositories.
 Temporarily exit the chroot environment, as we haven't yet installed git inside
 the rootfs:
 
+--------------------------------------------------------------------------------
+
   # exit
+
+--------------------------------------------------------------------------------
 
 
 This will unmount the filesystems that were previously mounted and drop you back
 into the host machine's shell. From there, we can clone the remaining repos:
 
+--------------------------------------------------------------------------------
+
   $ git clone https://github.com/tincan-linux/repo-extra sysroot/var/repo/extra
   $ (repo-xorg is not here yet)
+
+--------------------------------------------------------------------------------
 
 
 Now re-enter the chroot:
 
+--------------------------------------------------------------------------------
+
   # ./arc-chroot
+
+--------------------------------------------------------------------------------
 
 
 === Set $ARC_PATH $[022]
@@ -169,7 +200,11 @@ system.
 To let arc know where to find the official repositories, add this line to
 /etc/profile:
 
+--------------------------------------------------------------------------------
+
   export ARC_PATH=/var/repo/core:/var/repo/extra
+
+--------------------------------------------------------------------------------
 
 
 From now on, arc will look for packages in /var/repo/core and /var/repo/extra.
@@ -204,18 +239,26 @@ It may be helpful to set the following compiler flags:
 
 With this in mind, add the following lines to /etc/profile:
 
+--------------------------------------------------------------------------------
+
   export CFLAGS="-O3 -pipe -march=native"
   export CPPFLAGS="$CFLAGS"
   export CXXFLAGS="$CFLAGS"
   export MAKEFLAGS="-j$(nproc)"
+
+--------------------------------------------------------------------------------
 
 
 === Rebuild all packages $[032]
 
 Run the following to rebuild all packages (and install some new ones):
 
+--------------------------------------------------------------------------------
+
   # arc b arc binutils bison busybox certs flex gcc git gmp \\
     linux-headers m4 make mpc mpfr musl rustup zlib
+
+--------------------------------------------------------------------------------
 
 
 === Set up Linux kernel $[040]
@@ -248,9 +291,13 @@ which variant you want to use:
 
 Then download and extract it with the following:
 
+--------------------------------------------------------------------------------
+
   # curl -fLO [KERNEL_SOURCE]
   # tar xf [KERNEL_SOURCE]
   # cd [KERNEL_SOURCE]
+
+--------------------------------------------------------------------------------
 
 
 === Download firmware blobs $[042]
@@ -268,9 +315,13 @@ obtaining the correct firmware for your hardware.
 After obtaining the necessary firmware, extract the tarballs and copy required
 files to /usr/lib/firmware:
 
+--------------------------------------------------------------------------------
+
   # tar xf [FIRMWARE]
   # mkdir -pv /usr/lib/firmware
   # cp -R ./path/to/blob /usr/lib/firmware/
+
+--------------------------------------------------------------------------------
 
 
 === Install required packages $[043]
@@ -278,11 +329,15 @@ files to /usr/lib/firmware:
 Some additional packages are required beyond the ones installed so far in order
 to compile the kernel. Install them now:
 
+--------------------------------------------------------------------------------
+
   # arc b libelf pkgconf
 
   For menuconfig support (highly recommended):
 
   # arc b ncurses
+
+--------------------------------------------------------------------------------
 
 
 === Configure the kernel $[044]
@@ -292,14 +347,15 @@ something wrong here can prevent your system from booting. While there are many
 ways to go about configuring the kernel, I will be presenting one method here
 which has worked for me.
 
-Start with a default config, which should include some sane default settings:
+Start with a default config, which should include some sane default settings,
+then open the configuration menu:
+
+--------------------------------------------------------------------------------
 
   # make defconfig
-
-
-Next, start the menuconfig:
-
   # make menuconfig
+
+--------------------------------------------------------------------------------
 
 
 This will open a blue TUI where you can configure the kernel options. While
@@ -365,17 +421,25 @@ are some bits that I found are important to note:
 
 Once that's done, change all modules to baked-in (since modules are yucky):
 
+--------------------------------------------------------------------------------
+
   # sed -i 's/=m/=y/g' .config
+
+--------------------------------------------------------------------------------
 
 
 === Build and install the kernel $[045]
 
 Execute the following commands to build and install the kernel:
 
+--------------------------------------------------------------------------------
+
   # make
   # make install
   # mv /boot/vmlinuz /boot/vmlinuz-[VERSION]
   # mv /boot/System.map /boot/System.map-[VERSION]
+
+--------------------------------------------------------------------------------
 
 
 The 'make install' step may throw a LILO error. This is normal and doesn't
@@ -394,7 +458,11 @@ before we can make the system bootable.
 The package 'tincan-base' provides a tiny init script, [$/tincan-linux/init](https://github.com/tincan-linux/init) along
 with some files unique to Tin Can Linux. Install it with the following:
 
+--------------------------------------------------------------------------------
+
   # arc b tincan-base
+
+--------------------------------------------------------------------------------
 
 
 === Bootloader $[052]
@@ -402,7 +470,11 @@ with some files unique to Tin Can Linux. Install it with the following:
 Tin Can Linux uses [$/limine-bootloader/limine](https://limine-bootloader.org) instead of GRUB ([why?](/wiki/bootloader )) -- install
 it with this command:
 
+--------------------------------------------------------------------------------
+
   # arc b limine
+
+--------------------------------------------------------------------------------
 
 
 === Filesystem utilities $[053]
@@ -410,21 +482,33 @@ it with this command:
 While not strictly required, filesystem utilities may be needed for checking
 disks with 'fsck':
 
+--------------------------------------------------------------------------------
+
   # arc b e2fsprogs dosfstools
+
+--------------------------------------------------------------------------------
 
 
 === Networking utilities $[054]
 
 Again, these are not strictly required, but I assume most people want WiFi:
 
+--------------------------------------------------------------------------------
+
   # arc b dhcpcd openresolv libudev-zero eiwd
+
+--------------------------------------------------------------------------------
 
 
 === Other optional tools $[055]
 
 These are some other utilities that you may find useful:
 
+--------------------------------------------------------------------------------
+
   # arc b ssu
+
+--------------------------------------------------------------------------------
 
 
 === Make the system bootable $[060]
@@ -433,7 +517,11 @@ These are some other utilities that you may find useful:
 Finally, it's time to boot your new, shiny Linux system! Go ahead and exit the
 chroot:
 
+--------------------------------------------------------------------------------
+
   # exit
+
+--------------------------------------------------------------------------------
 
 
 === Setup disks $[061]
@@ -445,14 +533,20 @@ this guide will use three (boot, root, and swap).
 First, identify your disk (I use /dev/sda in these examples). Then, for a UEFI
 install, run these commands as root to partition the disks:
 
+--------------------------------------------------------------------------------
+
   # parted /dev/sda -- mklabel gpt
   # parted /dev/sda -- mkpart root ext4 512MB -8GB
   # parted /dev/sda -- mkpart swap linux-swap -8GB 100%
   # parted /dev/sda -- mkpart ESP fat32 1MB 512MB
   # parted /dev/sda -- set 3 esp on
 
+--------------------------------------------------------------------------------
+
 
 And for a BIOS install:
+
+--------------------------------------------------------------------------------
 
   # parted /dev/sda -- mklabel msdos
   # parted /dev/sda -- mkpart primary 512MB -8GB
@@ -460,22 +554,32 @@ And for a BIOS install:
   # parted /dev/sda -- mkpart primary fat32 1MB 512MB
   # parted /dev/sda -- set 3 boot on
 
+--------------------------------------------------------------------------------
+
 
 Feel free to change these partition sizes as you see fit, or add other
 partitions (for example, some users like to have a separate home partition).
 
 Next, format these partitions appropriately:
 
+--------------------------------------------------------------------------------
+
   # mkfs.ext4 -L tincan /dev/sda1
   # mkswap -L swap /dev/sda2
   # mkfs.fat -F 32 -n boot /dev/sda3
 
+--------------------------------------------------------------------------------
+
 
 Finally, mount the root and boot partitions:
+
+--------------------------------------------------------------------------------
 
   # mount /dev/sda1 /mnt
   # mkdir -pv /mnt/boot
   # mount /dev/sda3 /mnt/boot
+
+--------------------------------------------------------------------------------
 
 
 === Create /etc/fstab $[062]
@@ -510,29 +614,47 @@ cgroup2        /sys/fs/cgroup  cgroup2   nosuid,noexec,nodev  0     0
 
 To install your shiny new distro, simply copy the contents of sysroot/ to /mnt:
 
+--------------------------------------------------------------------------------
+
   # cp -R sysroot/* /mnt/
+
+--------------------------------------------------------------------------------
 
 
 === Install bootloader $[064]
 
 The final step is to install the bootloader. First, re-enter the chroot with:
 
+--------------------------------------------------------------------------------
+
   # ./arc-chroot /mnt
+
+--------------------------------------------------------------------------------
 
 
 Then, for a BIOS install (run from the chroot):
 
+--------------------------------------------------------------------------------
+
   # cp /usr/share/limine/limine-bios.sys /boot/
   # limine bios-install /dev/sda
+
+--------------------------------------------------------------------------------
 
 
 Or for a UEFI install:
 
+--------------------------------------------------------------------------------
+
   # mkdir -pv /boot/EFI/BOOT
   # cp /usr/share/limine/BOOTX64.EFI /boot/EFI/BOOT/
 
+--------------------------------------------------------------------------------
+
 
 Next, create /boot/limine.conf with this content:
+
+--------------------------------------------------------------------------------
 
   timeout: 5
 
@@ -540,6 +662,8 @@ Next, create /boot/limine.conf with this content:
       protocol: linux
       kernel_path: boot():/vmlinuz-[VERSION]
       kernel_cmdline: root=UUID=xxxx-xx--xxx ro loglevel=3 rootwait quiet
+
+--------------------------------------------------------------------------------
 
 
 To get the UUID of your root partition, simply run 'blkid'. You can also replace
@@ -550,8 +674,12 @@ disk's UUID.
 And that's it! Tin Can Linux should now be installed. Exit the chroot, then
 reboot to enter your shiny new system:
 
+--------------------------------------------------------------------------------
+
   # exit
   # reboot now
+
+--------------------------------------------------------------------------------
 
 
 Oh, what's that? It didn't work? Here are some reasons why:
@@ -578,15 +706,23 @@ Now that you've booted into Tin Can Linux, here's some stuff you can do:
 
 PLEASE DO THIS. IT'S A SECURITY RISK IF YOU DON'T.
 
+--------------------------------------------------------------------------------
+
   # passwd root
+
+--------------------------------------------------------------------------------
 
 
 === Create a normal user $[072]
 
 Avoid accidentally wrecking your system:
 
+--------------------------------------------------------------------------------
+
   # adduser [USER]
   # passwd [USER]
+
+--------------------------------------------------------------------------------
 
 
 === Graphical environment $[073]
