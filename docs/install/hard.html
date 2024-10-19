@@ -129,8 +129,9 @@ for a different architecture, the easy method is recommended.
 
 <a href="#060">[060</a>] Make the system bootable
   <a href="#061">[061</a>] Setup disks
-  <a href="#062">[062</a>] Install Tin Can to disk
-  <a href="#063">[063</a>] Install bootloader
+  <a href="#062">[062</a>] Create /etc/fstab
+  <a href="#063">[063</a>] Install Tin Can to disk
+  <a href="#064">[064</a>] Install bootloader
 
 <a href="#070">[070</a>] Post installation
   <a href="#071">[071</a>] Set root password
@@ -564,14 +565,42 @@ Finally, mount the root and boot partitions:
   # mount /dev/sda3 /mnt/boot
 
 
-=== Install Tin Can to disk <span id=062>[<a class=t href=#062>062</a>]</span>
+=== Create /etc/fstab <span id=062>[<a class=t href=#062>062</a>]</span>
+
+Now that the disks are set up, you will need to create the /etc/fstab file. As
+the root user, create sysroot/etc/fstab (we're not in the chroot anymore) with
+these contents, assuming the partitioning scheme above:
+
+--------------------------------------------------------------------------------
+
+# Begin /etc/fstab
+
+# file system  mount-point     type      options             dump  fsck
+
+LABEL=boot     /boot           vfat      defaults             0     0
+LABEL=tincan   /               ext4      defaults             0     1
+LABEL=swap     swap            swap      pri=1                0     0
+proc           /proc           proc      nosuid,noexec,nodev  0     0
+sysfs          /sys            sysfs     nosuid,noexec,nodev  0     0
+devpts         /dev/pts        devpts    gid=5,mode=620       0     0
+tmpfs          /run            tmpfs     defaults             0     0
+devtmpfs       /dev            devtmpfs  mode=0755,nosuid     0     0
+tmpfs          /dev/shm        tmpfs     nosuid,nodev         0     0
+cgroup2        /sys/fs/cgroup  cgroup2   nosuid,noexec,nodev  0     0
+
+# End /etc/fstab
+
+--------------------------------------------------------------------------------
+
+
+=== Install Tin Can to disk <span id=063>[<a class=t href=#063>063</a>]</span>
 
 To install your shiny new distro, simply copy the contents of sysroot/ to /mnt:
 
   # cp -R sysroot/* /mnt/
 
 
-=== Install bootloader <span id=063>[<a class=t href=#063>063</a>]</span>
+=== Install bootloader <span id=064>[<a class=t href=#064>064</a>]</span>
 
 The final step is to install the bootloader. First, re-enter the chroot with:
 

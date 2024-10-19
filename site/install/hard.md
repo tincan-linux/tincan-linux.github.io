@@ -42,8 +42,9 @@ for a different architecture, the easy method is recommended.
 
 [[060](#060)] Make the system bootable
   [[061](#061)] Setup disks
-  [[062](#062)] Install Tin Can to disk
-  [[063](#063)] Install bootloader
+  [[062](#062)] Create /etc/fstab
+  [[063](#063)] Install Tin Can to disk
+  [[064](#064)] Install bootloader
 
 [[070](#070)] Post installation
   [[071](#071)] Set root password
@@ -477,14 +478,42 @@ Finally, mount the root and boot partitions:
   # mount /dev/sda3 /mnt/boot
 
 
-=== Install Tin Can to disk $[062]
+=== Create /etc/fstab $[062]
+
+Now that the disks are set up, you will need to create the /etc/fstab file. As
+the root user, create sysroot/etc/fstab (we're not in the chroot anymore) with
+these contents, assuming the partitioning scheme above:
+
+--------------------------------------------------------------------------------
+
+# Begin /etc/fstab
+
+# file system  mount-point     type      options             dump  fsck
+
+LABEL=boot     /boot           vfat      defaults             0     0
+LABEL=tincan   /               ext4      defaults             0     1
+LABEL=swap     swap            swap      pri=1                0     0
+proc           /proc           proc      nosuid,noexec,nodev  0     0
+sysfs          /sys            sysfs     nosuid,noexec,nodev  0     0
+devpts         /dev/pts        devpts    gid=5,mode=620       0     0
+tmpfs          /run            tmpfs     defaults             0     0
+devtmpfs       /dev            devtmpfs  mode=0755,nosuid     0     0
+tmpfs          /dev/shm        tmpfs     nosuid,nodev         0     0
+cgroup2        /sys/fs/cgroup  cgroup2   nosuid,noexec,nodev  0     0
+
+# End /etc/fstab
+
+--------------------------------------------------------------------------------
+
+
+=== Install Tin Can to disk $[063]
 
 To install your shiny new distro, simply copy the contents of sysroot/ to /mnt:
 
   # cp -R sysroot/* /mnt/
 
 
-=== Install bootloader $[063]
+=== Install bootloader $[064]
 
 The final step is to install the bootloader. First, re-enter the chroot with:
 
