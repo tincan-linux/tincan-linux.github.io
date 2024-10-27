@@ -212,7 +212,64 @@ filesystems being mounted, followed by a shell prompt.
 
 Once inside the chroot environment, you must rebuild all the packages, since
 mussel does not use the latest versions, and also to start tracking packages
-with arc, the package manager (see <a href="/wiki/arc">@/wiki/arc</a> for more information on it)
+with arc, the package manager (see <a href="/wiki/arc">@/wiki/arc</a> for more information on it).
+
+First, you will need to make sure that the compiler is able to find all needed
+header files for compiling packages. Right now, it is likely using an incorrect
+include path that is based on the direcory where ./bootstrap was run. First,
+find out what this path is by executing the following:
+
+--------------------------------------------------------------------------------
+
+  # gcc -v -x c -E /dev/null
+ 
+--------------------------------------------------------------------------------
+
+This will produce a bunch of diagnostic output about GCC. In this output, look
+for the lines that are similar to the following (they should be somewhere in the
+middle):
+
+--------------------------------------------------------------------------------
+
+  gcc version 13.2.0 (GCC)
+  COLLECT_GCC_OPTIONS='-v' '-E' '-mtune=generic' '-march=x86-64'
+   /lib/gcc/x86_64-linux-musl/13.2.0/cc1 -E -quiet -v /dev/null -mtune=generic -ma
+  rch=x86-64 -dumpbase null
+  ignoring nonexistent directory "/home/xxxxx/tincan/sysroot/usr/local/include"
+  ignoring nonexistent directory "/lib/gcc/x86_64-linux-musl/13.2.0/../../../../x8
+  6_64-linux-musl/include"
+  ignoring nonexistent directory "/home/xxxxx/tincan/sysroot/usr/include"
+  #include "..." search starts here:
+  #include &lt;...> search starts here:
+   /lib/gcc/x86_64-linux-musl/13.2.0/include
+  End of search list.
+
+--------------------------------------------------------------------------------
+
+The last nonexistent directory, /home/xxxxx/tincan/sysroot/usr/include, is what
+we need. Create this directory and point it to /include (replace this with the
+approrpiate path, based on the previous output):
+
+--------------------------------------------------------------------------------
+
+  # mkdir -pv /home/xxxxx/tincan/sysroot/usr/
+  # ln -sv /include /home/xxxxx/tincan/sysroot/usr/include
+
+--------------------------------------------------------------------------------
+
+Now, if you re-run the gcc command from above, there should be an additional
+directory under '#include&lt;...>':
+
+--------------------------------------------------------------------------------
+
+#include &lt;...> search starts here:
+ /home/pineapple/tincan/sysroot/usr/include
+ /lib/gcc/x86_64-linux-musl/13.2.0/include
+End of search list.
+
+--------------------------------------------------------------------------------
+
+Now, we are ready to build the packages.
 
 The packages must be built in a specific order for everything to work as
 expected. Perform the following (in this exact order):
