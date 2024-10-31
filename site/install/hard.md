@@ -206,8 +206,8 @@ expected. Perform the following (in this exact order):
 
   Or in a single command, so you can walk away and come back later:
 
-  # arc yb linux-headers \&\& arc yb musl \&\& arc yb m4 \&\& arc yb binutils \
-    \&\& arc yb gcc \&\& arc yb make \&\& arc yb busybox \&\& arc yb rustup \
+  # arc yb linux-headers \&\& arc yb musl \&\& arc yb m4 \&\& arc yb binutils \\
+    \&\& arc yb gcc \&\& arc yb make \&\& arc yb busybox \&\& arc yb rustup \\
     \&\& rustup default stable \&\& arc yb arc
 
   Remove the compatibility symlink to /include:
