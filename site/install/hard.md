@@ -179,7 +179,7 @@ directory under '#include<...>':
 --------------------------------------------------------------------------------
 
 #include <...> search starts here:
- /home/pineapple/tincan/sysroot/usr/include
+ /home/xxxxx/tincan/sysroot/usr/include
  /lib/gcc/x86_64-linux-musl/13.2.0/include
 End of search list.
 
