@@ -138,6 +138,7 @@ find out what this path is by executing the following:
  
 --------------------------------------------------------------------------------
 
+
 This will produce a bunch of diagnostic output about GCC. In this output, look
 for the lines that are similar to the following (they should be somewhere in the
 middle):
@@ -159,6 +160,7 @@ middle):
 
 --------------------------------------------------------------------------------
 
+
 The last nonexistent directory, /home/xxxxx/tincan/sysroot/usr/include, is what
 we need. Create this directory and point it to /include (replace this with the
 approrpiate path, based on the previous output):
@@ -169,6 +171,7 @@ approrpiate path, based on the previous output):
   # ln -sv /include /home/xxxxx/tincan/sysroot/usr/include
 
 --------------------------------------------------------------------------------
+
 
 Now, if you re-run the gcc command from above, there should be an additional
 directory under '#include<...>':
@@ -181,6 +184,7 @@ directory under '#include<...>':
 End of search list.
 
 --------------------------------------------------------------------------------
+
 
 Now, we are ready to build the packages.
 
@@ -197,7 +201,18 @@ expected. Perform the following (in this exact order):
   # arc b make
   # arc b busybox
   # arc b rustup
+  # rustup default stable
   # arc b arc
+
+  Or in a single command, so you can walk away and come back later:
+
+  # arc yb linux-headers && arc yb musl && arc yb m4 && arc yb binutils \
+    && arc yb gcc && arc yb make && arc yb busybox && arc yb rustup \
+    && rustup default stable && arc yb arc
+
+  Remove the compatibility symlink to /include:
+
+  # rm -rf /home/xxxxx
 
 --------------------------------------------------------------------------------
 
@@ -234,7 +249,7 @@ into the host machine's shell. From there, we can clone the remaining repos:
 --------------------------------------------------------------------------------
 
   $ git clone https://github.com/tincan-linux/repo-extra sysroot/var/repo/extra
-  $ (repo-xorg is not here yet)
+  $ git clone https://github.com/tincan-linux/repo-xorg sysroot/var/repo/xorg
 
 --------------------------------------------------------------------------------
 
@@ -259,13 +274,22 @@ To let arc know where to find the official repositories, add this line to
 
 --------------------------------------------------------------------------------
 
-  export ARC_PATH=/var/repo/core:/var/repo/extra
+  export ARC_PATH=/var/repo/core:/var/repo/extra:/var/repo/xorg
 
 --------------------------------------------------------------------------------
 
 
-From now on, arc will look for packages in /var/repo/core and /var/repo/extra.
-See [@/wiki/arc](/wiki/arc) to learn more about how $ARC_PATH works.
+Then, source /etc/profile to apply the changes to your current shell:
+
+--------------------------------------------------------------------------------
+
+  # source /etc/profile
+
+--------------------------------------------------------------------------------
+
+
+From now on, arc will look for packages in /var/repo/core, /var/repo/extra, and
+/var/repo/xorg. See [@/wiki/arc](/wiki/arc) to learn more about how $ARC_PATH works.
 
 
 === Rebuild the system (again) $[030]
@@ -302,6 +326,15 @@ With this in mind, add the following lines to /etc/profile:
   export CPPFLAGS="$CFLAGS"
   export CXXFLAGS="$CFLAGS"
   export MAKEFLAGS="-j$(nproc)"
+
+--------------------------------------------------------------------------------
+
+
+And source it to apply the changes to your current shell:
+
+--------------------------------------------------------------------------------
+
+  # source /etc/profile
 
 --------------------------------------------------------------------------------
 
@@ -419,7 +452,7 @@ This will open a blue TUI where you can configure the kernel options. While
 there isn't a one-size-fits-all procedure for this part of the process, here
 are some bits that I found are important to note:
 
-  - YOU NEED GRAPHICS DRIVERS. One of the most common pitfalls with kernel
+  - YOU NEED GRAPHICS DRIVERS!!! One of the most common pitfalls with kernel
     configuration is leaving out a graphics driver, usually for the framebuffer.
     Your system probably will not boot without these options:
 
@@ -724,8 +757,9 @@ Next, create /boot/limine.conf with this content:
 
 
 To get the UUID of your root partition, simply run 'blkid'. You can also replace
-the 'UUID=xxxx' part with '/dev/sda1' but this is less reliable than using the
-disk's UUID.
+the 'UUID=xxxx' part with '/dev/sda1' but this may be reliable than using the
+disk's UUID. If there's a kernel panic when booting that somewhat resembles
+'VFS not syncing' then try replacing the UUID with /dev/sda1.
 
 
 And that's it! Tin Can Linux should now be installed. Exit the chroot, then
@@ -784,7 +818,13 @@ Avoid accidentally wrecking your system:
 
 === Graphical environment $[073]
 
-It's not here yet. Sorry
+Install a minimal framebuffer-based xorg server (currently WIP):
+
+--------------------------------------------------------------------------------
+
+  # arc sb tinyx sx
+
+--------------------------------------------------------------------------------
 
 
 === Get counted $[074]
