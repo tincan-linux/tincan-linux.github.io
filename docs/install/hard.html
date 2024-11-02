@@ -905,11 +905,25 @@ Avoid accidentally wrecking your system:
 
 === Graphical environment <span id=073>[<a class=t href=#073>073</a>]</span>
 
-Install a minimal framebuffer-based xorg server (currently WIP):
+Install the xorg server and some other bits to make it work:
 
 --------------------------------------------------------------------------------
 
-  # arc sb tinyx sx
+  # arc b xorg-server sx xf86-input-libinput
+
+--------------------------------------------------------------------------------
+
+
+Window managers, terminals, etc are not provided. You will have to obtain and
+build these yourself. I recommend trying out <a href="https://github.com/dylanaraps/sowm">sowm</a> for a window manager, <a href="https://st.suckless.org">st</a> for a
+terminal, and <a href="https://tools.suckless.org/dmenu">dmenu</a> to launch programs.
+
+
+And to install a minimal web browser:
+
+--------------------------------------------------------------------------------
+
+  # arc b netsurf
 
 --------------------------------------------------------------------------------
 
