@@ -1,5 +1,5 @@
 +------------------------------------------------------------------------------+
-|  Tin Can Linux, a distro "made from scraps I found on the internet" (TM).    |
+|  Tin Can Linux, a distro made from Scraps I Found On The Internet (TM).      |
 +------------------------------------------------------------------------------+
 
 Tin Can Linux is an independent hobby distribution made with the goal of being

@@ -9,13 +9,13 @@ proper documentation for all this stuff.
 === Distribution
 ================
 
-  @/wiki/arc
-  @/wiki/filesystem
-  @/wiki/repos
+  [@/wiki/arc](/wiki/arc)
+  [@/wiki/filesystem](/wiki/filesystem)
+  [@/wiki/repos](/wiki/repos)
 
 
 === Software
 ============
 
-  @/wiki/bootloader
-  @/wiki/kernel
+  [@/wiki/bootloader](/wiki/bootloader)
+  [@/wiki/kernel](/wiki/kernel)
