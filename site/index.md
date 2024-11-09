@@ -1,5 +1,5 @@
 +------------------------------------------------------------------------------+
-|  Tin Can Linux, a tiny distro made from scraps I found on the internet (TM). |
+|  Tin Can Linux, a distro "made from scraps I found on the internet" (TM).    |
 +------------------------------------------------------------------------------+
 
 Tin Can Linux is an independent hobby distribution made with the goal of being
@@ -50,6 +50,9 @@ the choice to replace /usr with a symlink to /. The directories are as follows:
       /tmp - mountpoint for tmpfs
       /usr - symlink to /
       /var - services, package repos, installed packages, misc filesystems
+
+
+See more about these choices at [@/wiki/filesystem](/wiki/filesystem).
 
 
 === Contributing

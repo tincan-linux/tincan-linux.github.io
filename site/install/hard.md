@@ -399,7 +399,7 @@ provided in the kernel. Some of this firmware can be found at this mirror:
 
 
 Other firmware, such as Intel Microcode, may need to be obtained from other
-sources. See [@/install/kconfig](/install/kconfig) for more detailed info on selecting and
+sources. See [@/wiki/kernel](/wiki/kernel) for more detailed info on selecting and
 obtaining the correct firmware for your hardware.
 
 After obtaining the necessary firmware, extract the tarballs and copy required
@@ -504,7 +504,7 @@ are some bits that I found are important to note:
     where you could ask a question and see if someone can help you get to the
     answer.
 
-  - Also check out [@/install/kconfig](/install/kconfig) which serves as a place for all things
+  - Also check out [@/wiki/kernel](/wiki/kernel) which serves as a place for all things
     related to kernel configuration. Tips, tricks, etc. Although it's looking
     kinda empty right now :(
 

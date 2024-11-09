@@ -1,5 +1,5 @@
 +------------------------------------------------------------------------------+
-| Become a registered user of Tin Can Linux!                                   |
+|  Become a registered user of Tin Can Linux!                                  |
 +------------------------------------------------------------------------------+
 
 Fill out this tiny form to register as a Tin Can Linux user and forever be
