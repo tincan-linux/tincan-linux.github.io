@@ -68,7 +68,7 @@ contribution guidelines.
 Tin Can Linux was inspired by and made possible by the following amazing
 projects (in no particular order):
 
-  - Mussel (https://github.com/firasuke/mussel)
-  - StaLi (https://sta.li)
-  - Linux from Scratch (https://linuxfromscratch.org)
-  - Kiss Linux (https://kisslinux.github.io)
+  - Mussel ([https://github.com/firasuke/mussel])
+  - StaLi ([https://sta.li])
+  - Linux from Scratch ([https://linuxfromscratch.org])
+  - Kiss Linux ([https://kisslinux.github.io])
