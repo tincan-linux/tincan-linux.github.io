@@ -62,6 +62,7 @@
       return false;
     }
 
+    disableAllButtons(form);
     var url = form.action;
     var xhr = new XMLHttpRequest();
     xhr.open('POST', url);
@@ -103,7 +104,7 @@
   document.addEventListener("DOMContentLoaded", loaded, false);
 
   function disableAllButtons(form) {
-    var buttons = form.querySelectorAll("button");
+    var buttons = form.querySelectorAll("input");
     for (var i = 0; i < buttons.length; i++) {
       buttons[i].disabled = true;
     }

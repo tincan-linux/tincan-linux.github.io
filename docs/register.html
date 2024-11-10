@@ -124,6 +124,11 @@ immortalized in the list of users.
   </tr>
 </table></div><script>
 function myFunction() {
+  var buttons = document.querySelectorAll("button");
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].disabled = true;
+  }
+
   var url = "https://script.google.com/macros/s/AKfycbwPWWny4-bK10yTeU6w-PJlI90NSQ-FN8jGx5vvdNtTHpfP9d6j8n3pgmMi9Tg8aiRe_g/exec";
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url);
