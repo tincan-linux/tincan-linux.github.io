@@ -12,10 +12,14 @@ Repository: [$/avs-origami/arc](https://github.com/avs-origami/arc)
 ============
 
 [[010](#010)] Usage
+  [[011](#011)] Resolving conflicts
+
 [[020](#020)] Package format
   [[021](#021)] Package.toml
   [[022](#022)] Build
+
 [[030](#030)] About $ARC_PATH
+
 [[040](#040)] Configuration
 
 
@@ -35,10 +39,11 @@ arguments to print out this help message):
    / / /\\  \\ \\  \\_\\ |__.
   /__./  \\.___\\    \\___/
 
-  Usage: arc [s/v/y][b/c/d/h/i/l/n/p/r/s/u/v] [pkg]...
+  Usage: arc [s/v/y][b/c/d/f/h/i/l/n/p/r/s/u/v] [pkg]...
     -> b / build     Build packages
     -> c / checksum  Generate checksums
     -> d / download  Download sources
+    -> f / find      Fuzzy search for a package
     -> h / help      Print this help
     -> i / install   Install built packages
     -> l / list      List installed packages
@@ -78,10 +83,10 @@ Some usage examples:
 
   $ arc b gcc
 
-  Installs the 'gcc' package, and prints all output from the build script to
-  the terminal (output will still be stored to the log file as well).
+  Installs the 'gcc' and 'zlib' packages, and prints all output from the build
+  script to the terminal (output will still be stored to the log files as well).
 
-  $ arc vb gcc
+  $ arc vb gcc zlib
 
   Sync the local repositories with upstream and perform a full system upgrade,
   automatically bypassing all confirmation prompts.
@@ -89,6 +94,22 @@ Some usage examples:
   $ arc syu
 
 --------------------------------------------------------------------------------
+
+
+=== Resolving conflicts $[011]
+
+Sometimes, a file will be provided by multiple packages (for example, the
+program 'clear' is provided by both 'busybox' and 'ncurses'). In this case the
+user must manually select which package should provide the file.
+
+If a conflict is detected, arc will provide a [Y/n] prompt asking whether to
+[Y] use the new provider or [n] keep the current provider. Any answer not
+starting with 'n' or 'N' will be treated as 'Y'.
+
+The package manager will update the manifests of installed packages as necessary
+to accomodate changes, but the choice of provider is not otherwise remembered.
+As such any time either package is updated the user will need to explicitly
+state which provider to use.
 
 
 === Package format $[020]

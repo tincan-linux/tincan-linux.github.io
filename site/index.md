@@ -36,20 +36,27 @@ the choice to replace /usr with a symlink to /. The directories are as follows:
 
       /bin - executables
      /boot - boot files
-      /dev - devices
       /etc - system config
      /home - all user directories (including root)
   /include - include \& header files
       /lib - static / dynamic libs
-      /opt - yucky stuff (nothing yet!)
-     /proc - proc files
       /run - mountpoint for runfs
-     /sbin - symlink to /bin
     /share - man pages, other package files
-      /sys - sys files
       /tmp - mountpoint for tmpfs
-      /usr - symlink to /
       /var - services, package repos, installed packages, misc filesystems
+
+
+With the following as compatibility symlinks:
+
+    /sbin -> /bin
+     /usr -> /
+
+
+Assuming some standard Linux filesystems:
+
+      /dev - devices
+     /proc - proc files
+      /sys - sys files
 
 
 See more about these choices at [@/wiki/filesystem](/wiki/filesystem).
