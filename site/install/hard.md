@@ -305,7 +305,7 @@ time, we will rebuild all the packages in the system.
 It may be helpful to set the following compiler flags:
 
   - CFLAGS: Setting one of '-O2', '-Os', or '-O3' can be used to optimize the
-    binareies that are produced.
+    binaries that are produced.
 
   - CFLAGS: Setting '-pipe' can speed up compilation at the cost of higher
     memory usage.
@@ -757,8 +757,8 @@ Next, create /boot/limine.conf with this content:
 
 
 To get the UUID of your root partition, simply run 'blkid'. You can also replace
-the 'UUID=xxxx' part with '/dev/sda1' but this may be reliable than using the
-disk's UUID. If there's a kernel panic when booting that somewhat resembles
+the 'UUID=xxxx' part with '/dev/sda1' but this may be less reliable than using
+the disk's UUID. If there's a kernel panic when booting that somewhat resembles
 'VFS not syncing' then try replacing the UUID with /dev/sda1.
 
 
