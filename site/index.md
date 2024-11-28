@@ -28,45 +28,28 @@ functions somewhat similarly to the kiss package manager but is notably
 different in several ways. Read more about it at [@/wiki/arc](/wiki/arc).
 
 
+=== Release Model
+=================
+
+Tin Can Linux follows a rolling release model. However, "versions" will be
+provided in the form on tags on the repos for stable combinations of packages or
+before making major changes to the repos.
+
+
 === Filesystem
 ==============
 
 The filesystem is inspired by [sta.li](https://sta.li). The main difference from most distros is
-the choice to replace /usr with a symlink to /. The directories are as follows:
-
-      /bin - executables
-     /boot - boot files
-      /etc - system config
-     /home - all user directories (including root)
-  /include - include \& header files
-      /lib - static / dynamic libs
-      /run - mountpoint for runfs
-    /share - man pages, other package files
-      /tmp - mountpoint for tmpfs
-      /var - services, package repos, installed packages, misc filesystems
-
-
-With the following as compatibility symlinks:
-
-    /sbin -> /bin
-     /usr -> /
-
-
-Assuming some standard Linux filesystems:
-
-      /dev - devices
-     /proc - proc files
-      /sys - sys files
-
-
-See more about these choices at [@/wiki/filesystem](/wiki/filesystem).
+the choice to replace /usr with a symlink to /. See more about these choices
+at [@/wiki/filesystem](/wiki/filesystem).
 
 
 === Contributing
 ================
 
 See the github. Different parts of the project have slightly different
-contribution guidelines.
+contribution guidelines. In general, issues are welcome everywhere, and pull
+requests are welcome everywhere except the official package repositories.
 
 
 === Inspiration
@@ -76,6 +59,8 @@ Tin Can Linux was inspired by and made possible by the following amazing
 projects (in no particular order):
 
   - Mussel ([https://github.com/firasuke/mussel])
-  - StaLi ([https://sta.li])
   - Linux from Scratch ([https://linuxfromscratch.org])
+  - Glaucus Linux ([https://glaucuslinux.org])
   - Kiss Linux ([https://kisslinux.github.io])
+  - StaLi ([https://sta.li])
+  - Oasis Linux ([https://github.com/oasislinux])
