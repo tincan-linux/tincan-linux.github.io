@@ -4,4 +4,4 @@
 
 Get the latest news about Tin Can Linux!
 
-  - [11/30/2024: Ditching Xorg](2024-11-30)
+  - [11/30/2024: Ditching X.Org](2024-11-30)
