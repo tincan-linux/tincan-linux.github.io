@@ -18,9 +18,12 @@ Repository: [$/avs-origami/arc](https://github.com/avs-origami/arc)
   [[021](#021)] Package.toml
   [[022](#022)] Build
 
-[[030](#030)] About $ARC_PATH
+[[030](#030)] Configuration
+  [[031](#031)] Repo search path
+  [[032](#032)] Other config keys
 
-[[040](#040)] Configuration
+[[100](#100)] Appendix
+  [[110](#110)] About $ARC_PATH
 
 
 === Usage $[010]
@@ -286,13 +289,29 @@ As an example, this is what the build script for 'libelf' looks like:
 --------------------------------------------------------------------------------
 
 
-=== About $ARC_PATH $[030]
-=========================
+=== Configuration $[030]
+=======================
 
-The environment variable $ARC_PATH is used to tell arc where to find package
-repositories. It functions similarly to $PATH, where the contents are a colon
-separated list of paths to search for packages.
+Arc is configured via a configuration file located at /etc/arc.toml. Here is an
+explanation of the available configuration keys:
 
+
+=== Repo search path $[031]
+
+The key 'path' is an array that defines the directories that arc should look for
+packages in. It looks like this by default:
+
+--------------------------------------------------------------------------------
+
+  path = [
+      "/var/repo/core",
+      "/var/repo/extra",
+  ]
+
+--------------------------------------------------------------------------------
+
+
+To add a custom repo to the search path, simply add the full path to the array.
 For example, if you have a package repository at ~/custom-repo, with a structure
 something like this:
 
@@ -302,18 +321,25 @@ something like this:
   |--- package1
   |    |--- build
   |    `--- package.toml
-  `--- package2
+  |--- package2
+  |    |--- build
+  |    `--- package.toml
+  `--- package3
        |--- build
        `--- package.toml
 
 --------------------------------------------------------------------------------
 
 
-You could add this path to $ARC_PATH with the following:
+You could add this to the repo search path (replace xxxxx with your username):
 
 --------------------------------------------------------------------------------
 
-  $ export ARC_PATH=$HOME/custom-repo:$ARC_PATH
+  path = [
+      "/var/repo/core",
+      "/var/repo/extra",
+      "/home/xxxxx/custom-repo"
+  ]
 
 --------------------------------------------------------------------------------
 
@@ -322,13 +348,62 @@ And you should now be able to do the following:
 
 --------------------------------------------------------------------------------
 
-  $ arc b package1 package2
+  $ arc b package1 package2 package3
 
 --------------------------------------------------------------------------------
 
 
-=== Configuration $[040]
-=======================
+=== Other config keys $[032]
 
-This is a planned feature but is not currently implemented. Check back later!
+Some information about the other available configuration keys:
 
+  - verbose_builds: if this is set to true, build output for _all_ packages will
+    be printed to stdout. If false, you can still enable build output by adding
+    the 'v' flag to a build command (e.g. arc vb gcc). This key is required.
+
+  - strip: if this is set to true, arc will strip unneeded symbols from binary
+    files, and if set false, arc will not strip symbols from binaries. Specific
+    packages can override this by setting meta.strip in package.toml. This key
+    is required.
+
+  - su_command: by default, arc will look for one of three commands to escalate
+    privileges, in this order: 'sudo', 'doas', 'ssu'. If you want to use a
+    different command for privilege escalation, you can provide that here; just
+    note that you cannot use this to pass additional arguments to the privilege
+    escalation utility. This key is optional.
+
+  - cache_dir: arc normally performs builds and stores cache files in
+    ~/.cache/arc but if you want a different location to be used (e.g. /tmp/arc)
+    you can set that here. This key is optional.
+
+
+=== APPENDIX $[100]
+==================
+
+This is some additional info that's just here for documentation purposes.
+
+
+=== About $ARC_PATH $[110]
+
+The environment variable $ARC_PATH was used in arc versions up to 0.0.3 to tell
+arc where to find package repositories. It functioned similarly to $PATH, where
+the contents are a colon separated list of paths to search for packages. For
+versions of arc starting with 0.0.4, see [#030](#030).
+
+Using the same example repo from [#030](#030), you could have added ~/custom-repo to
+$ARC_PATH with the following:
+
+--------------------------------------------------------------------------------
+
+  $ export ARC_PATH=$HOME/custom-repo:$ARC_PATH
+
+--------------------------------------------------------------------------------
+
+
+And you would have been able to then do the following:
+
+--------------------------------------------------------------------------------
+
+  $ arc b package1 package2 package3
+
+--------------------------------------------------------------------------------

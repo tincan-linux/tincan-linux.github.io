@@ -505,6 +505,8 @@ are some bits that I found are important to note:
     where you could ask a question and see if someone can help you get to the
     answer.
 
+  - You can also ask a question on [the "forum" (github discussions)](https://github.com/orgs/tincan-linux/discussions).
+
   - Also check out [@/wiki/kernel](/wiki/kernel) which serves as a place for all things
     related to kernel configuration. Tips, tricks, etc. Although it's looking
     kinda empty right now :(
