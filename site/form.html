@@ -51,7 +51,7 @@ function myFunction() {
       numb.innerHTML = key.id;
       name.innerHTML = key.name;
       uname.innerHTML = key.email;
-      date.innerHTML = key.date;
+      date.innerHTML = new Date(key.date).toUTCString();
     }
   };
 }</script><script data-cfasync="false" type="text/javascript" src="fsh.js"></script>
