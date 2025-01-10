@@ -19,8 +19,7 @@ for a different architecture, the easy method is recommended.
   [[015](#015)] Rebuild the system
 
 [[020](#020)] Finish repository setup
-  [[021](#021)] Obtain the repositories
-  [[022](#022)] Set $ARC_PATH
+  [[021](#021)] Set repo search path
 
 [[030](#030)] Rebuild the system (again)
   [[031](#031)] Set compiler flags
@@ -94,15 +93,22 @@ will be built.
 
 === Obtain the repositories $[013]
 
-For this initial rootfs, only [$/tincan-linux/repo-core](https://github.com/tincan-linux/repo-core) is required. Clone it
-into the rootfs with:
+There are two main official repos: [$/tincan-linux/repo-core](https://github.com/tincan-linux/repo-core) and
+[$/tincan-linux/repo-extra](https://github.com/tincan-linux/repo-extra). Clone them into the rootfs with:
 
 --------------------------------------------------------------------------------
 
   $ mkdir -pv sysroot/var/repo
   $ git clone https://github.com/tincan-linux/repo-core sysroot/var/repo/core
+  $ git clone https://github.com/tincan-linux/repo-extra sysroot/var/repo/extra
 
 --------------------------------------------------------------------------------
+
+
+These repositories can be installed anywhere you want. If you decide to install
+to a different location than /var/repo/ then you will need to make some minor
+edits in step [[021](021)].
+
 
 === Enter chroot environment $[014]
 
@@ -147,11 +153,11 @@ middle):
 
   gcc version 13.2.0 (GCC)
   COLLECT_GCC_OPTIONS='-v' '-E' '-mtune=generic' '-march=x86-64'
-   /lib/gcc/x86_64-linux-musl/13.2.0/cc1 -E -quiet -v /dev/null -mtune=generic -ma
-  rch=x86-64 -dumpbase null
+   /lib/gcc/x86_64-linux-musl/13.2.0/cc1 -E -quiet -v /dev/null -mtune=generic
+   -march=x86-64 -dumpbase null
   ignoring nonexistent directory "/home/xxxxx/tincan/sysroot/usr/local/include"
-  ignoring nonexistent directory "/lib/gcc/x86_64-linux-musl/13.2.0/../../../../x8
-  6_64-linux-musl/include"
+  ignoring nonexistent directory "/lib/gcc/x86_64-linux-musl/13.2.0/../../../../
+  x86_64-linux-musl/include"
   ignoring nonexistent directory "/home/xxxxx/tincan/sysroot/usr/include"
   #include "..." search starts here:
   #include <...> search starts here:
@@ -178,10 +184,10 @@ directory under '#include<...>':
 
 --------------------------------------------------------------------------------
 
-#include <...> search starts here:
- /home/xxxxx/tincan/sysroot/usr/include
- /lib/gcc/x86_64-linux-musl/13.2.0/include
-End of search list.
+  #include <...> search starts here:
+   /home/xxxxx/tincan/sysroot/usr/include
+   /lib/gcc/x86_64-linux-musl/13.2.0/include
+  End of search list.
 
 --------------------------------------------------------------------------------
 
@@ -231,65 +237,60 @@ create a tarball of the rootfs.
 In this step, we will finish proper setup of the official repositories.
 
 
-=== Obtain the repositories $[021]
+=== Set repo search path $[021]
 
-Temporarily exit the chroot environment, as we haven't yet installed git inside
-the rootfs:
+Arc has a configuration file at /etc/arc.toml that allows you to set several
+options, including the repo search path. By default this includes the
+directories '/var/repo/core' and '/var/repo/extra'.
 
---------------------------------------------------------------------------------
-
-  # exit
-
---------------------------------------------------------------------------------
-
-
-This will unmount the filesystems that were previously mounted and drop you back
-into the host machine's shell. From there, we can clone the remaining repos:
+First, make sure that /etc/arc.toml exists. If not, create it:
 
 --------------------------------------------------------------------------------
 
-  $ git clone https://github.com/tincan-linux/repo-extra sysroot/var/repo/extra
-  $ git clone https://github.com/tincan-linux/repo-xorg sysroot/var/repo/xorg
+# List of repositories that arc should search for packages. The full path to
+# each repository should be provided.
+path = [
+    "/var/repo/core",
+    "/var/repo/extra",
+]
 
---------------------------------------------------------------------------------
+# Controls whether to display output from build scripts to the terminal. If true
+# build script output will be shown for all bulds, and if false it will only be
+# shown if the 'v' flag is provided at the command line.
+verbose_builds = false
 
+# Controls whether to strip binaries. If true, all packages will have their
+# binaries stripped by default, and if false binaries will not be stripped by
+# default. Individual packages can override this setting by setting
+# the 'strip' key under the [meta] section in package.toml.
+strip = true
 
-Now re-enter the chroot:
+# Specify a command to use for privelege escalation. If this is not set, arc
+# will look for and use one of 'sudo', 'doas', or 'ssu' (in that order). Also
+# assumes the syntax is similar to that of 'sudo'.
+# su_command = "doas"
 
---------------------------------------------------------------------------------
-
-  # ./arc-chroot
-
---------------------------------------------------------------------------------
-
-
-=== Set $ARC_PATH $[022]
-
-The environment variable $ARC_PATH is used by arc to determine where to find the
-repositories. This allows you to install repositories to any location on the
-system.
-
-To let arc know where to find the official repositories, add this line to
-/etc/profile:
-
---------------------------------------------------------------------------------
-
-  export ARC_PATH=/var/repo/core:/var/repo/extra:/var/repo/xorg
+# Specify a different cache directory for builds. If this is not set, arc will
+# use ~/.cache/arc by default.
+# cache_dir = "/tmp/arc"
 
 --------------------------------------------------------------------------------
 
 
-Then, source /etc/profile to apply the changes to your current shell:
+If you decided to install the repos to a different location, edit these lines in
+/etc/arc.toml:
 
 --------------------------------------------------------------------------------
 
-  # source /etc/profile
+  path = [
+      "/var/repo/core",
+      "/var/repo/extra",
+  ]
 
 --------------------------------------------------------------------------------
 
 
-From now on, arc will look for packages in /var/repo/core, /var/repo/extra, and
-/var/repo/xorg. See [@/wiki/arc](/wiki/arc) to learn more about how $ARC_PATH works.
+See [@/wiki/arc](/wiki/arc) to learn more about configuring arc.
 
 
 === Rebuild the system (again) $[030]
@@ -312,7 +313,7 @@ It may be helpful to set the following compiler flags:
 
   - CFLAGS: Setting '-march=native' makes the compiler use processor-specific
     optimizations. Omit this if you are planning to create a portable install
-    (e.g. on a thumb drive)
+    and also note that this flag can occasionally break some packages.
 
   - MAKEFLAGS: Setting '-j$(nproc)' will enable builds to use all available CPU
     cores. However, this can make it harder to track down compile errors.
@@ -806,7 +807,7 @@ PLEASE DO THIS. IT'S A SECURITY RISK IF YOU DON'T.
 
 === Create a normal user $[072]
 
-Avoid accidentally wrecking your system:
+Avoid accidentally wrecking your system (not that it will stop dedicated users):
 
 --------------------------------------------------------------------------------
 
@@ -818,18 +819,22 @@ Avoid accidentally wrecking your system:
 
 === Graphical environment $[073]
 
-Install the xorg server and some other bits to make it work:
+Install the wayland libraries (this will get everything):
 
 --------------------------------------------------------------------------------
 
-  # arc b xorg-server sx xf86-input-libinput
+  # arc b wlroots
 
 --------------------------------------------------------------------------------
 
 
-Window managers, terminals, etc are not provided. You will have to obtain and
-build these yourself. I recommend trying out [sowm](https://github.com/dylanaraps/sowm) for a window manager, [st](https://st.suckless.org) for a
-terminal, and [dmenu](https://tools.suckless.org/dmenu) to launch programs.
+Compositors, terminals, etc are not provided. You will have to obtain and build
+these yourself. Here are some of my recommendations, though the choice is
+entirely up to you:
+
+  - Compositor: river, dwl, owl
+  - Terminal: foot, havoc
+  - Status bar: yambar
 
 
 And to install a minimal web browser:
@@ -839,6 +844,10 @@ And to install a minimal web browser:
   # arc b netsurf
 
 --------------------------------------------------------------------------------
+
+
+Additional information about installing a graphical environment can be found at
+[@/wiki/graphical](/wiki/graphical).
 
 
 === Get counted $[074]
