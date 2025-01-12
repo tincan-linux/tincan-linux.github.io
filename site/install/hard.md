@@ -199,6 +199,7 @@ expected. Perform the following (in this exact order):
 
 --------------------------------------------------------------------------------
 
+  # mkdir -pv /var/cache/arc/installed  # Fix for [$/avs-origami/arc/issues/2](https://github.com/avs-origami/arc/issues/2)
   # arc b linux-headers
   # arc b musl
   # arc b m4
