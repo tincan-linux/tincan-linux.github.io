@@ -106,6 +106,11 @@ for a different architecture, the easy method is recommended.
 === Contents
 ============
 
+<a href="#000">[000</a>] Prerequisites
+  <a href="#001">[001</a>] General requirements
+  <a href="#002">[002</a>] Mussel requirements
+  <a href="#003">[003</a>] Bootstrap requirements
+
 <a href="#010">[010</a>] Bootstrapping the system
   <a href="#011">[011</a>] Obtain sources
   <a href="#012">[012</a>] Initial bootstrap
@@ -145,6 +150,83 @@ for a different architecture, the easy method is recommended.
   <a href="#072">[072</a>] Create a normal user
   <a href="#073">[073</a>] Graphical environment
   <a href="#074">[074</a>] Get counted
+
+
+=== Prerequisites <span id=000>[<a class=t href=#000>000</a>]</span>
+=======================
+
+Before beginning the bootstrap process, there are some prerequisites that must
+be met by the host system.
+
+
+=== General requirements <span id=001>[<a class=t href=#001>001</a>]</span>
+
+The bootstrap process must be completed on a host machine running Linux. Note
+that the entire distribution is compiled locally during this process, and it
+can be installed to a different location (such as a USB stick or another PC).
+
+In order to build Tin Can, the host system should have at least 25GB of free
+disk space and have a reasonable amount of RAM. It is also worth noting that
+having a CPU that is more powerful will make the overall build process faster.
+
+WARNING: 14th gen Intel CPUs may have some stability issues that could lead to
+"internal compiler errors" when trying to build large packages such as gcc!
+
+
+=== Mussel requirements <span id=002>[<a class=t href=#002>002</a>]</span>
+
+The bootstrap process uses <a href="https://github.com/firasuke/mussel">$/firasuke/mussel</a> to generate the cross-compiler
+toolchain. It has a number of requirements:
+
+  - b3sum
+  - bash
+  - bc
+  - binutils
+  - bison
+  - bzip2
+  - coreutils
+  - diffutils
+  - findutils
+  - gawk
+  - gcc / g++
+  - git
+  - glibc
+  - grep
+  - gzip
+  - libzstd
+  - m4
+  - make
+  - patch
+  - perl
+  - rsync
+  - sed
+  - tar
+  - texinfo
+  - xz
+
+
+These requirements are also checked at the beginning of the bootstrap process.
+
+
+=== Bootstrap requirements <span id=003>[<a class=t href=#003>003</a>]</span>
+
+In addition to these, a few more things are required for bootstrap:
+
+  - rust
+  - wget
+
+
+Rust is used to build arc, the package manager used by Tin Can. Once it is
+installed, you will also need to add the x86_64-unknown-linux-musl target:
+
+--------------------------------------------------------------------------------
+
+  $ rustup target add x86_64-unknown-linux-musl
+
+--------------------------------------------------------------------------------
+
+
+This will allow cross-compiling arc for use in the chroot environment.
 
 
 === Bootstrapping the system <span id=010>[<a class=t href=#010>010</a>]</span>
