@@ -6,11 +6,16 @@ parse() {
     # Replace < with &lt;
     sed 's<\\\&lt;g' |
 
+    # *[ italics
+    sed -E 's \*\[ <i> g' |
+    # ]* end italics
+    sed -E 's \]\* <\/i> g' |
+
+    # ![image](url)
+    sed -E 's!\[ *([[:alnum:] \$\&\;\?!,-/\)\+]*.{0,10}[[:alnum:] \&\;\?!,\)\+]) *\] *\( *([^ ]+) *\)<a href="\2"><img src="\2" alt="\1"><\/a>g' |
     # [text](url)
     sed -E 's\[ *([[:alnum:] \$\&\;\?!,-/\)\+]*.{0,10}[[:alnum:] \&\;\?!,\)\+-]) *\] *\( *([^ ]+) *"([^"]+)"\)<a href="\2" title="\3">\1<\/a>g' |
     sed -E 's\[ *([[:alnum:] \$\&\;\?!,-/\)\+]*.{0,10}[[:alnum:] \&\;\?!,\)\+]+) *\] *\( *([^ ]+) *\)<a href="\2">\1<\/a>g' |
-    # ![image](url)
-    sed -E 's!\[ *([[:alnum:] \$\&\;\?!,-/\)\+]*.{0,10}[[:alnum:] \&\;\?!,\)\+]) *\] *\( *([^ ]+) *\)<img src="\2" alt="\1">g' |
     # [url]
     sed -E "s([^\"\'\>=])(\[)(http[s]?://[^[:space:]]*)(\])\1<a href=\3>\3</a>g" |
     # url
@@ -43,3 +48,4 @@ done
 
 cp site/favicon.png docs/favicon.png
 cp site/fsh.js docs/fsh.js
+cp -R img docs/
