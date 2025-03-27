@@ -115,6 +115,11 @@ for a different architecture, the easy method is recommended.
 === Contents
 ============
 
+<a href="#000">[000</a>] Prerequisites
+  <a href="#001">[001</a>] General requirements
+  <a href="#002">[002</a>] Mussel requirements
+  <a href="#003">[003</a>] Bootstrap requirements
+
 <a href="#010">[010</a>] Bootstrapping the system
   <a href="#011">[011</a>] Obtain sources
   <a href="#012">[012</a>] Initial bootstrap
@@ -123,8 +128,7 @@ for a different architecture, the easy method is recommended.
   <a href="#015">[015</a>] Rebuild the system
 
 <a href="#020">[020</a>] Finish repository setup
-  <a href="#021">[021</a>] Obtain the repositories
-  <a href="#022">[022</a>] Set $ARC_PATH
+  <a href="#021">[021</a>] Set repo search path
 
 <a href="#030">[030</a>] Rebuild the system (again)
   <a href="#031">[031</a>] Set compiler flags
@@ -155,6 +159,83 @@ for a different architecture, the easy method is recommended.
   <a href="#072">[072</a>] Create a normal user
   <a href="#073">[073</a>] Graphical environment
   <a href="#074">[074</a>] Get counted
+
+
+=== Prerequisites <span id=000>[<a class=t href=#000>000</a>]</span>
+=======================
+
+Before beginning the bootstrap process, there are some prerequisites that must
+be met by the host system.
+
+
+=== General requirements <span id=001>[<a class=t href=#001>001</a>]</span>
+
+The bootstrap process must be completed on a host machine running Linux. Note
+that the entire distribution is compiled locally during this process, and it
+can be installed to a different location (such as a USB stick or another PC).
+
+In order to build Tin Can, the host system should have at least 25GB of free
+disk space and have a reasonable amount of RAM. It is also worth noting that
+having a CPU that is more powerful will make the overall build process faster.
+
+WARNING: 14th gen Intel CPUs may have some stability issues that could lead to
+"internal compiler errors" when trying to build large packages such as gcc!
+
+
+=== Mussel requirements <span id=002>[<a class=t href=#002>002</a>]</span>
+
+The bootstrap process uses <a href="https://github.com/firasuke/mussel">$/firasuke/mussel</a> to generate the cross-compiler
+toolchain. It has a number of requirements:
+
+  - b3sum
+  - bash
+  - bc
+  - binutils
+  - bison
+  - bzip2
+  - coreutils
+  - diffutils
+  - findutils
+  - gawk
+  - gcc / g++
+  - git
+  - glibc
+  - grep
+  - gzip
+  - libzstd
+  - m4
+  - make
+  - patch
+  - perl
+  - rsync
+  - sed
+  - tar
+  - texinfo
+  - xz
+
+
+These requirements are also checked at the beginning of the bootstrap process.
+
+
+=== Bootstrap requirements <span id=003>[<a class=t href=#003>003</a>]</span>
+
+In addition to these, a few more things are required for bootstrap:
+
+  - rust
+  - wget
+
+
+Rust is used to build arc, the package manager used by Tin Can. Once it is
+installed, you will also need to add the x86_64-unknown-linux-musl target:
+
+--------------------------------------------------------------------------------
+
+  $ rustup target add x86_64-unknown-linux-musl
+
+--------------------------------------------------------------------------------
+
+
+This will allow cross-compiling arc for use in the chroot environment.
 
 
 === Bootstrapping the system <span id=010>[<a class=t href=#010>010</a>]</span>
@@ -198,15 +279,22 @@ will be built.
 
 === Obtain the repositories <span id=013>[<a class=t href=#013>013</a>]</span>
 
-For this initial rootfs, only <a href="https://github.com/tincan-linux/repo-core">$/tincan-linux/repo-core</a> is required. Clone it
-into the rootfs with:
+There are two main official repos: <a href="https://github.com/tincan-linux/repo-core">$/tincan-linux/repo-core</a> and
+<a href="https://github.com/tincan-linux/repo-extra">$/tincan-linux/repo-extra</a>. Clone them into the rootfs with:
 
 --------------------------------------------------------------------------------
 
   $ mkdir -pv sysroot/var/repo
   $ git clone <a href=https://github.com/tincan-linux/repo-core>https://github.com/tincan-linux/repo-core</a> sysroot/var/repo/core
+  $ git clone <a href=https://github.com/tincan-linux/repo-extra>https://github.com/tincan-linux/repo-extra</a> sysroot/var/repo/extra
 
 --------------------------------------------------------------------------------
+
+
+These repositories can be installed anywhere you want. If you decide to install
+to a different location than /var/repo/ then you will need to make some minor
+edits in step <a href="021">[021</a>].
+
 
 === Enter chroot environment <span id=014>[<a class=t href=#014>014</a>]</span>
 
@@ -251,11 +339,11 @@ middle):
 
   gcc version 13.2.0 (GCC)
   COLLECT_GCC_OPTIONS='-v' '-E' '-mtune=generic' '-march=x86-64'
-   /lib/gcc/x86_64-linux-musl/13.2.0/cc1 -E -quiet -v /dev/null -mtune=generic -ma
-  rch=x86-64 -dumpbase null
+   /lib/gcc/x86_64-linux-musl/13.2.0/cc1 -E -quiet -v /dev/null -mtune=generic
+   -march=x86-64 -dumpbase null
   ignoring nonexistent directory "/home/xxxxx/tincan/sysroot/usr/local/include"
-  ignoring nonexistent directory "/lib/gcc/x86_64-linux-musl/13.2.0/../../../../x8
-  6_64-linux-musl/include"
+  ignoring nonexistent directory "/lib/gcc/x86_64-linux-musl/13.2.0/../../../../
+  x86_64-linux-musl/include"
   ignoring nonexistent directory "/home/xxxxx/tincan/sysroot/usr/include"
   #include "..." search starts here:
   #include &lt;...> search starts here:
@@ -282,10 +370,10 @@ directory under '#include&lt;...>':
 
 --------------------------------------------------------------------------------
 
-#include &lt;...> search starts here:
- /home/xxxxx/tincan/sysroot/usr/include
- /lib/gcc/x86_64-linux-musl/13.2.0/include
-End of search list.
+  #include &lt;...> search starts here:
+   /home/xxxxx/tincan/sysroot/usr/include
+   /lib/gcc/x86_64-linux-musl/13.2.0/include
+  End of search list.
 
 --------------------------------------------------------------------------------
 
@@ -297,6 +385,7 @@ expected. Perform the following (in this exact order):
 
 --------------------------------------------------------------------------------
 
+  # mkdir -pv /var/cache/arc/installed  # Fix for <a href="https://github.com/avs-origami/arc/issues/2">$/avs-origami/arc/issues/2</a>
   # arc b linux-headers
   # arc b musl
   # arc b m4
@@ -335,65 +424,60 @@ create a tarball of the rootfs.
 In this step, we will finish proper setup of the official repositories.
 
 
-=== Obtain the repositories <span id=021>[<a class=t href=#021>021</a>]</span>
+=== Set repo search path <span id=021>[<a class=t href=#021>021</a>]</span>
 
-Temporarily exit the chroot environment, as we haven't yet installed git inside
-the rootfs:
+Arc has a configuration file at /etc/arc.toml that allows you to set several
+options, including the repo search path. By default this includes the
+directories '/var/repo/core' and '/var/repo/extra'.
 
---------------------------------------------------------------------------------
-
-  # exit
-
---------------------------------------------------------------------------------
-
-
-This will unmount the filesystems that were previously mounted and drop you back
-into the host machine's shell. From there, we can clone the remaining repos:
+First, make sure that /etc/arc.toml exists. If not, create it:
 
 --------------------------------------------------------------------------------
 
-  $ git clone <a href=https://github.com/tincan-linux/repo-extra>https://github.com/tincan-linux/repo-extra</a> sysroot/var/repo/extra
-  $ git clone <a href=https://github.com/tincan-linux/repo-xorg>https://github.com/tincan-linux/repo-xorg</a> sysroot/var/repo/xorg
+# List of repositories that arc should search for packages. The full path to
+# each repository should be provided.
+path = [
+    "/var/repo/core",
+    "/var/repo/extra",
+]
 
---------------------------------------------------------------------------------
+# Controls whether to display output from build scripts to the terminal. If true
+# build script output will be shown for all bulds, and if false it will only be
+# shown if the 'v' flag is provided at the command line.
+verbose_builds = false
 
+# Controls whether to strip binaries. If true, all packages will have their
+# binaries stripped by default, and if false binaries will not be stripped by
+# default. Individual packages can override this setting by setting
+# the 'strip' key under the [meta] section in package.toml.
+strip = true
 
-Now re-enter the chroot:
+# Specify a command to use for privelege escalation. If this is not set, arc
+# will look for and use one of 'sudo', 'doas', or 'ssu' (in that order). Also
+# assumes the syntax is similar to that of 'sudo'.
+# su_command = "doas"
 
---------------------------------------------------------------------------------
-
-  # ./arc-chroot
-
---------------------------------------------------------------------------------
-
-
-=== Set $ARC_PATH <span id=022>[<a class=t href=#022>022</a>]</span>
-
-The environment variable $ARC_PATH is used by arc to determine where to find the
-repositories. This allows you to install repositories to any location on the
-system.
-
-To let arc know where to find the official repositories, add this line to
-/etc/profile:
-
---------------------------------------------------------------------------------
-
-  export ARC_PATH=/var/repo/core:/var/repo/extra:/var/repo/xorg
+# Specify a different cache directory for builds. If this is not set, arc will
+# use ~/.cache/arc by default.
+# cache_dir = "/tmp/arc"
 
 --------------------------------------------------------------------------------
 
 
-Then, source /etc/profile to apply the changes to your current shell:
+If you decided to install the repos to a different location, edit these lines in
+/etc/arc.toml:
 
 --------------------------------------------------------------------------------
 
-  # source /etc/profile
+  path = [
+      "/var/repo/core",
+      "/var/repo/extra",
+  ]
 
 --------------------------------------------------------------------------------
 
 
-From now on, arc will look for packages in /var/repo/core, /var/repo/extra, and
-/var/repo/xorg. See <a href="/wiki/arc">@/wiki/arc</a> to learn more about how $ARC_PATH works.
+See <a href="/wiki/arc">@/wiki/arc</a> to learn more about configuring arc.
 
 
 === Rebuild the system (again) <span id=030>[<a class=t href=#030>030</a>]</span>
@@ -416,7 +500,7 @@ It may be helpful to set the following compiler flags:
 
   - CFLAGS: Setting '-march=native' makes the compiler use processor-specific
     optimizations. Omit this if you are planning to create a portable install
-    (e.g. on a thumb drive)
+    and also note that this flag can occasionally break some packages.
 
   - MAKEFLAGS: Setting '-j$(nproc)' will enable builds to use all available CPU
     cores. However, this can make it harder to track down compile errors.
@@ -607,6 +691,8 @@ are some bits that I found are important to note:
     who had the same problem you do, and if not, there are plenty of communities
     where you could ask a question and see if someone can help you get to the
     answer.
+
+  - You can also ask a question on <a href="https://github.com/orgs/tincan-linux/discussions">the "forum" (github discussions)</a>.
 
   - Also check out <a href="/wiki/kernel">@/wiki/kernel</a> which serves as a place for all things
     related to kernel configuration. Tips, tricks, etc. Although it's looking
@@ -910,7 +996,7 @@ PLEASE DO THIS. IT'S A SECURITY RISK IF YOU DON'T.
 
 === Create a normal user <span id=072>[<a class=t href=#072>072</a>]</span>
 
-Avoid accidentally wrecking your system:
+Avoid accidentally wrecking your system (not that it will stop dedicated users):
 
 --------------------------------------------------------------------------------
 
@@ -922,18 +1008,22 @@ Avoid accidentally wrecking your system:
 
 === Graphical environment <span id=073>[<a class=t href=#073>073</a>]</span>
 
-Install the xorg server and some other bits to make it work:
+Install the wayland libraries (this will get everything):
 
 --------------------------------------------------------------------------------
 
-  # arc b xorg-server sx xf86-input-libinput
+  # arc b wlroots
 
 --------------------------------------------------------------------------------
 
 
-Window managers, terminals, etc are not provided. You will have to obtain and
-build these yourself. I recommend trying out <a href="https://github.com/dylanaraps/sowm">sowm</a> for a window manager, <a href="https://st.suckless.org">st</a> for a
-terminal, and <a href="https://tools.suckless.org/dmenu">dmenu</a> to launch programs.
+Compositors, terminals, etc are not provided. You will have to obtain and build
+these yourself. Here are some of my recommendations, though the choice is
+entirely up to you:
+
+  - Compositor: river, dwl, owl
+  - Terminal: foot, havoc
+  - Status bar: yambar
 
 
 And to install a minimal web browser:
@@ -943,6 +1033,10 @@ And to install a minimal web browser:
   # arc b netsurf
 
 --------------------------------------------------------------------------------
+
+
+Additional information about installing a graphical environment can be found at
+<a href="/wiki/graphical">@/wiki/graphical</a>.
 
 
 === Get counted <span id=074>[<a class=t href=#074>074</a>]</span>
@@ -971,6 +1065,6 @@ particular order:
 
 ________________________________________________________________________________
 
-AVS Origami (C) 2024
+AVS Origami (C) 2024-2025
 
 </pre></div></div>

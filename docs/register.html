@@ -109,6 +109,8 @@
 Fill out this tiny form to register as a Tin Can Linux user and forever be
 immortalized in the list of users.
 
+This is not a space for comments/questions/etc! That's what <a href="https://github.com/orgs/tincan-linux/discussions">the forum</a> is for.
+
 <form 
   class="gform pure-form pure-form-stacked" 
   method="POST" 
@@ -162,7 +164,7 @@ function myFunction() {
       numb.innerHTML = key.id;
       name.innerHTML = key.name;
       uname.innerHTML = key.email;
-      date.innerHTML = key.date;
+      date.innerHTML = new Date(key.date).toUTCString();
     }
   };
 }</script><script data-cfasync="false" type="text/javascript" src="fsh.js"></script>
@@ -170,6 +172,6 @@ function myFunction() {
 
 ________________________________________________________________________________
 
-AVS Origami (C) 2024
+AVS Origami (C) 2024-2025
 
 </pre></div></div>

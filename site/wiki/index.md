@@ -19,3 +19,9 @@ proper documentation for all this stuff.
 
   [@/wiki/bootloader](/wiki/bootloader)
   [@/wiki/kernel](/wiki/kernel)
+
+
+=== Guides
+==========
+
+  [@/wiki/graphical](/wiki/graphical)
