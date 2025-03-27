@@ -4,4 +4,5 @@
 
 Get the latest news about Tin Can Linux!
 
+  - [03/27/2025: The Future of Tin Can](2024-03-27)
   - [11/30/2024: Ditching Xorg](2024-11-30)
