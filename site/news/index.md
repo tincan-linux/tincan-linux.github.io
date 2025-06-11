@@ -4,5 +4,6 @@
 
 Get the latest news about Tin Can Linux!
 
+  - [06/11/2025: Tin Can + Repology](2025-06-11)
   - [03/27/2025: The Future of Tin Can](2025-03-27)
   - [11/30/2024: Ditching Xorg](2024-11-30)
