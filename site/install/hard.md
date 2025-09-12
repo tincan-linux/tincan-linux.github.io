@@ -250,13 +250,27 @@ middle):
 
 
 The last nonexistent directory, /home/xxxxx/tincan/sysroot/usr/include, is what
-we need. Create this directory and point it to /include (replace this with the
-approrpiate path, based on the previous output):
+we need ('xxxxx' will be the username of the host PC). Create a symlink pointing
+it to /include (replace with the appropriate path, based on the GCC output):
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------- 
 
   # mkdir -pv /home/xxxxx/tincan/sysroot/usr/
   # ln -sv /include /home/xxxxx/tincan/sysroot/usr/include
+
+--------------------------------------------------------------------------------
+
+
+Update Sep. 12 2025: rather than manually extracting the correct path from the
+GCC output, this should also do the trick:
+
+--------------------------------------------------------------------------------
+
+  # mkdir -pv $(gcc -v -x c -E /dev/null 2>&1 | grep "sysroot/usr/include" |
+    cut -d"\"" -f2 | rev | cut -d "/" -f2- | rev)
+
+  # ln -sv /include $(gcc -v -x c -E /dev/null 2>&1 |
+    grep "sysroot/usr/include" | cut -d"\"" -f2)
 
 --------------------------------------------------------------------------------
 
@@ -281,7 +295,6 @@ expected. Perform the following (in this exact order):
 
 --------------------------------------------------------------------------------
 
-  # mkdir -pv /var/cache/arc/installed  # Fix for [$/avs-origami/arc/issues/2](https://github.com/avs-origami/arc/issues/2)
   # arc b linux-headers
   # arc b musl
   # arc b m4
