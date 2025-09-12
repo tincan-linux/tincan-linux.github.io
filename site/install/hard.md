@@ -270,7 +270,7 @@ GCC output, this should also do the trick:
     cut -d"\"" -f2 | rev | cut -d "/" -f2- | rev)
 
   # ln -sv /include $(gcc -v -x c -E /dev/null 2>\&1 | \\
-    grep "sysroot/usr/include" | cut -d"\"" -f2)
+    grep "sysroot/usr/include" | cut -d"\\"" -f2)
 
 --------------------------------------------------------------------------------
 
