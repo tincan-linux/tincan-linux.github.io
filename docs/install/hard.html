@@ -354,8 +354,9 @@ middle):
 
 
 The last nonexistent directory, /home/xxxxx/tincan/sysroot/usr/include, is what
-we need ('xxxxx' will be the username of the host PC). Create a symlink pointing
-it to /include (replace with the appropriate path, based on the GCC output):
+we need ('xxxxx' will be the path to the tincan repo on the host PC). Create a
+symlink pointing it to /include (replace with the appropriate path, based on the
+GCC output):
 
 -------------------------------------------------------------------------------- 
 
@@ -416,7 +417,8 @@ expected. Perform the following (in this exact order):
     && arc yb gcc && arc yb make && arc yb busybox && arc yb rustup \
     && rustup default stable && arc yb arc
 
-  Remove the compatibility symlink to /include:
+  Remove the compatibility symlink to /include (replace 'xxxxx' with your
+  username on the host PC):
 
   # rm -rf /home/xxxxx
 
