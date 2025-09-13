@@ -814,6 +814,15 @@ cgroup2        /sys/fs/cgroup  cgroup2   nosuid,noexec,nodev  0     0
 --------------------------------------------------------------------------------
 
 
+Also create /etc/hostname:
+
+--------------------------------------------------------------------------------
+
+  # echo "tincan" > /etc/hostname
+
+--------------------------------------------------------------------------------
+
+
 === Install Tin Can to disk $[063]
 
 To install your shiny new distro, simply copy the contents of sysroot/ to /mnt:
@@ -860,12 +869,12 @@ Next, create /boot/limine.conf with this content:
 
 --------------------------------------------------------------------------------
 
-  timeout: 5
+timeout: 5
 
-  /Tin Can Linux
-      protocol: linux
-      kernel_path: boot():/vmlinuz-[VERSION]
-      kernel_cmdline: root=UUID=xxxx-xx--xxx ro loglevel=3 rootwait quiet
+/Tin Can Linux
+    protocol: linux
+    kernel_path: boot():/vmlinuz-[VERSION]
+    kernel_cmdline: root=UUID=xxxx-xx--xxx ro loglevel=3 rootwait quiet
 
 --------------------------------------------------------------------------------
 
