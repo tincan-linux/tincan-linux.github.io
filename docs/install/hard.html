@@ -157,8 +157,9 @@ for a different architecture, the easy method is recommended.
 <a href="#070">[070</a>] Post installation
   <a href="#071">[071</a>] Set root password
   <a href="#072">[072</a>] Create a normal user
-  <a href="#073">[073</a>] Graphical environment
-  <a href="#074">[074</a>] Get counted
+  <a href="#073">[073</a>] Connect to WiFi
+  <a href="#074">[074</a>] Graphical environment
+  <a href="#075">[075</a>] Get counted
 
 
 === Prerequisites <span id=000>[<a class=t href=#000>000</a>]</span>
@@ -1043,7 +1044,20 @@ Avoid accidentally wrecking your system (not that it will stop dedicated users):
 --------------------------------------------------------------------------------
 
 
-=== Graphical environment <span id=073>[<a class=t href=#073>073</a>]</span>
+=== Connect to WiFi <span id=073>[<a class=t href=#073>073</a>]</span>
+
+The internet is a great place! Connect to your WiFi network:
+
+--------------------------------------------------------------------------------
+
+  # printf 'passwd' | iwd_passphrase 'ssid' > /var/lib/iwd/'ssid.psk'
+
+--------------------------------------------------------------------------------
+
+Replace 'passwd' and 'ssid' with your WiFi name and password.
+
+
+=== Graphical environment <span id=074>[<a class=t href=#074>074</a>]</span>
 
 Install the wayland libraries (this will get everything):
 
@@ -1076,7 +1090,7 @@ Additional information about installing a graphical environment can be found at
 <a href="/wiki/graphical">@/wiki/graphical</a>.
 
 
-=== Get counted <span id=074>[<a class=t href=#074>074</a>]</span>
+=== Get counted <span id=075>[<a class=t href=#075>075</a>]</span>
 
 Now that you're a user of Tin Can Linux, head on over to <a href="/register">@/register</a> to get
 counted and immortalize yourself in the Tin Can Linux user list! You can also

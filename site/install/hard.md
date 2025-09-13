@@ -53,8 +53,9 @@ for a different architecture, the easy method is recommended.
 [[070](#070)] Post installation
   [[071](#071)] Set root password
   [[072](#072)] Create a normal user
-  [[073](#073)] Graphical environment
-  [[074](#074)] Get counted
+  [[073](#073)] Connect to WiFi
+  [[074](#074)] Graphical environment
+  [[075](#075)] Get counted
 
 
 === Prerequisites $[000]
@@ -939,7 +940,20 @@ Avoid accidentally wrecking your system (not that it will stop dedicated users):
 --------------------------------------------------------------------------------
 
 
-=== Graphical environment $[073]
+=== Connect to WiFi $[073]
+
+The internet is a great place! Connect to your WiFi network:
+
+--------------------------------------------------------------------------------
+
+  # printf 'passwd' | iwd_passphrase 'ssid' > /var/lib/iwd/'ssid.psk'
+
+--------------------------------------------------------------------------------
+
+Replace 'passwd' and 'ssid' with your WiFi name and password.
+
+
+=== Graphical environment $[074]
 
 Install the wayland libraries (this will get everything):
 
@@ -972,7 +986,7 @@ Additional information about installing a graphical environment can be found at
 [@/wiki/graphical](/wiki/graphical).
 
 
-=== Get counted $[074]
+=== Get counted $[075]
 
 Now that you're a user of Tin Can Linux, head on over to [@/register](/register) to get
 counted and immortalize yourself in the Tin Can Linux user list! You can also
