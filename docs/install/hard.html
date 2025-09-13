@@ -317,9 +317,22 @@ filesystems being mounted, followed by a shell prompt.
 
 Once inside the chroot environment, you must rebuild all the packages, since
 mussel does not use the latest versions, and also to start tracking packages
-with arc, the package manager (see <a href="/wiki/arc">@/wiki/arc</a> for more information on it).
+with moss, the package manager (see <a href="/wiki/arc">@/wiki/moss</a> for more information on it).
 
-First, you will need to make sure that the compiler is able to find all needed
+First, you need to make sure that any user can sync the local repos with the
+upstream ones. Git will normally complain about dubious ownership if a different
+user tries to 'git pull' a repo they do not own. To bypass this, set the repos
+as safe directories:
+
+--------------------------------------------------------------------------------
+
+  # git config --system --add safe.directory /var/repo/core
+  # git config --system --add safe.directory /var/repo/extra
+
+--------------------------------------------------------------------------------
+
+
+Next, you will need to make sure that the compiler is able to find all needed
 header files for compiling packages. Right now, it is likely using an incorrect
 include path that is based on the direcory where ./bootstrap was run. First,
 find out what this path is by executing the following:
