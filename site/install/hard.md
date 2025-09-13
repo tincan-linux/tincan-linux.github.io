@@ -950,7 +950,7 @@ The internet is a great place! Connect to your WiFi network:
 
 --------------------------------------------------------------------------------
 
-Replace 'passwd' and 'ssid' with your WiFi name and password.
+Replace 'passwd' and 'ssid' with your WiFi password and name, respectively.
 
 
 === Graphical environment $[074]
