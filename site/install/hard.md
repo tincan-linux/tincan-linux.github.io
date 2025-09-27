@@ -511,6 +511,12 @@ provided in the kernel. Some of this firmware can be found at this mirror:
   https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
 
 
+Alternatively, Linux From Scratch provides a convenient way to download the
+latest version of each firmware blob:
+
+  https://anduin.linuxfromscratch.org/BLFS/linux-firmware/
+
+
 Other firmware, such as Intel Microcode, may need to be obtained from other
 sources. See [@/wiki/kernel](/wiki/kernel) for more detailed info on selecting and
 obtaining the correct firmware for your hardware.
