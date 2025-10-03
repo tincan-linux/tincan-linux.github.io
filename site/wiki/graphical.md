@@ -16,6 +16,8 @@ Can Linux.
 
 [[020](#020)] Xorg
 
+[[030](#030)] Fonts
+
 
 === Wayland $[010]
 =================
@@ -80,3 +82,36 @@ These instructions are here in case you want to use X (or in the event that
 someone offers to unofficially maintain repo-xorg).
 
 ... I'm working on it. They will be here. Soon (TM).
+
+
+=== Fonts $[030]
+===============
+
+Most wayland packages, such as compositors, terminal emulators, etc will require
+at least one font to be installed in order to work properly.
+
+First, install fontconfig:
+
+--------------------------------------------------------------------------------
+
+  $ moss b fontconfig
+
+--------------------------------------------------------------------------------
+
+
+Next, find a font of your choice, preferrably one that's monospaced. Install it
+to either /usr/share/fonts/ (global install) or ~/.local/share/fonts/ (user
+install) and rebuild the font cache:
+
+--------------------------------------------------------------------------------
+
+  $ ssu mkdir -p /usr/share/fonts && cd /usr/share/fonts
+  $ ssu curl -fLO <link to font.ttf>
+  $ fc-cache
+
+--------------------------------------------------------------------------------
+
+
+Here are some interesting fonts I've used before, if you need some inspiration:
+  - https://github.com/oppiliappan/scientifica
+  - https://github.com/molarmanful/kirsch
