@@ -20,7 +20,7 @@ Can Linux.
 === Wayland $[010]
 =================
 
-Wayland is the officially supported graphical system for Tin Can Linux.
+Wayland is the primary graphical system for Tin Can Linux.
 
 
 === Installation $[011]
@@ -30,7 +30,7 @@ pulls in all other necessary packages as dependencies):
 
 --------------------------------------------------------------------------------
 
-  $ arc b wlroots
+  $ moss b wlroots
 
 --------------------------------------------------------------------------------
 
@@ -75,8 +75,8 @@ fi
 === Xorg $[020]
 ==============
 
-Xorg was supported until 11/30/2024 but will no longer be officially maintained.
-These instructions are here in case you want to use X (or in the event that
-someone offers to unofficially maintain repo-xorg).
+Xorg was the primary display server until 11/30/2024 but may no longer be
+maintained regularly because it's more difficult for me to keep up with the
+updates. The process is similar to Wayland, minus seatd.
 
-... I'm working on it. They will be here. Soon (TM).
+Instructions will be here. Soon (TM).

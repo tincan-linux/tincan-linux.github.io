@@ -643,7 +643,7 @@ with some files unique to Tin Can Linux. Install it with the following:
 
 === Bootloader $[052]
 
-Tin Can Linux uses [$/limine-bootloader/limine](https://limine-bootloader.org) instead of GRUB ([why?](/wiki/bootloader )) -- install
+Tin Can Linux uses [$/limine-bootloader/limine](https://limine-bootloader.org) instead of GRUB ([why?](/wiki/bootloader#030 )) -- install
 it with this command:
 
 --------------------------------------------------------------------------------
