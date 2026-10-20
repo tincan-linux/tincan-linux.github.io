@@ -53,8 +53,9 @@ for a different architecture, the easy method is recommended.
 [[070](#070)] Post installation
   [[071](#071)] Set root password
   [[072](#072)] Create a normal user
-  [[073](#073)] Graphical environment
-  [[074](#074)] Get counted
+  [[073](#073)] Connect to WiFi
+  [[074](#074)] Graphical environment
+  [[075](#075)] Get counted
 
 
 === Prerequisites $[000]
@@ -121,7 +122,7 @@ In addition to these, a few more things are required for bootstrap:
   - wget
 
 
-Rust is used to build arc, the package manager used by Tin Can. Once it is
+Rust is used to build moss, the package manager used by Tin Can. Once it is
 installed, you will also need to add the x86_64-unknown-linux-musl target:
 
 --------------------------------------------------------------------------------
@@ -131,7 +132,7 @@ installed, you will also need to add the x86_64-unknown-linux-musl target:
 --------------------------------------------------------------------------------
 
 
-This will allow cross-compiling arc for use in the chroot environment.
+This will allow cross-compiling moss for use in the chroot environment.
 
 
 === Bootstrapping the system $[010]
@@ -213,9 +214,22 @@ filesystems being mounted, followed by a shell prompt.
 
 Once inside the chroot environment, you must rebuild all the packages, since
 mussel does not use the latest versions, and also to start tracking packages
-with arc, the package manager (see [@/wiki/arc](/wiki/arc) for more information on it).
+with moss, the package manager (see [@/wiki/moss](/wiki/moss) for more information on it).
 
-First, you will need to make sure that the compiler is able to find all needed
+First, you need to make sure that any user can sync the local repos with the
+upstream ones. Git will normally complain about dubious ownership if a different
+user tries to 'git pull' a repo they do not own. To bypass this, set the repos
+as safe directories:
+
+--------------------------------------------------------------------------------
+
+  # git config --system --add safe.directory /var/repo/core
+  # git config --system --add safe.directory /var/repo/extra
+
+--------------------------------------------------------------------------------
+
+
+Next, you will need to make sure that the compiler is able to find all needed
 header files for compiling packages. Right now, it is likely using an incorrect
 include path that is based on the direcory where ./bootstrap was run. First,
 find out what this path is by executing the following:
@@ -250,13 +264,28 @@ middle):
 
 
 The last nonexistent directory, /home/xxxxx/tincan/sysroot/usr/include, is what
-we need. Create this directory and point it to /include (replace this with the
-approrpiate path, based on the previous output):
+we need ('xxxxx' will be the path to the tincan repo on the host PC). Create a
+symlink pointing it to /include (replace with the appropriate path, based on the
+GCC output):
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------- 
 
   # mkdir -pv /home/xxxxx/tincan/sysroot/usr/
   # ln -sv /include /home/xxxxx/tincan/sysroot/usr/include
+
+--------------------------------------------------------------------------------
+
+
+Update Sep. 12 2025: rather than manually extracting the correct path from the
+GCC output, this should also do the trick:
+
+--------------------------------------------------------------------------------
+
+  # mkdir -pv $(gcc -v -x c -E /dev/null 2>\&1 | grep "sysroot/usr/include" | \\
+    cut -d'"' -f2 | rev | cut -d "/" -f2- | rev)
+
+  # ln -sv /include $(gcc -v -x c -E /dev/null 2>\&1 | \\
+    grep "sysroot/usr/include" | cut -d'"' -f2)
 
 --------------------------------------------------------------------------------
 
@@ -281,25 +310,25 @@ expected. Perform the following (in this exact order):
 
 --------------------------------------------------------------------------------
 
-  # mkdir -pv /var/cache/arc/installed  # Fix for [$/avs-origami/arc/issues/2](https://github.com/avs-origami/arc/issues/2)
-  # arc b linux-headers
-  # arc b musl
-  # arc b m4
-  # arc b binutils
-  # arc b gcc
-  # arc b make
-  # arc b busybox
-  # arc b rustup
+  # moss b linux-headers
+  # moss b musl
+  # moss b m4
+  # moss b binutils
+  # moss b gcc
+  # moss b make
+  # moss b busybox
+  # moss b rustup
   # rustup default stable
-  # arc b arc
+  # moss b moss
 
   Or in a single command, so you can walk away and come back later:
 
-  # arc yb linux-headers \&\& arc yb musl \&\& arc yb m4 \&\& arc yb binutils \\
-    \&\& arc yb gcc \&\& arc yb make \&\& arc yb busybox \&\& arc yb rustup \\
-    \&\& rustup default stable \&\& arc yb arc
+  # moss yb linux-headers \&\& moss yb musl \&\& moss yb m4 \&\& moss yb binutils \\
+    \&\& moss yb gcc \&\& moss yb make \&\& moss yb busybox \&\& moss yb rustup \\
+    \&\& rustup default stable \&\& moss yb moss
 
-  Remove the compatibility symlink to /include:
+  Remove the compatibility symlink to /include (replace 'xxxxx' with your
+  username on the host PC):
 
   # rm -rf /home/xxxxx
 
@@ -322,15 +351,15 @@ In this step, we will finish proper setup of the official repositories.
 
 === Set repo search path $[021]
 
-Arc has a configuration file at /etc/arc.toml that allows you to set several
+Moss has a configuration file at /etc/moss.toml that allows you to set several
 options, including the repo search path. By default this includes the
 directories '/var/repo/core' and '/var/repo/extra'.
 
-First, make sure that /etc/arc.toml exists. If not, create it:
+First, make sure that /etc/moss.toml exists. If not, create it:
 
 --------------------------------------------------------------------------------
 
-# List of repositories that arc should search for packages. The full path to
+# List of repositories that moss should search for packages. The full path to
 # each repository should be provided.
 path = [
     "/var/repo/core",
@@ -348,20 +377,20 @@ verbose_builds = false
 # the 'strip' key under the [meta] section in package.toml.
 strip = true
 
-# Specify a command to use for privelege escalation. If this is not set, arc
+# Specify a command to use for privelege escalation. If this is not set, moss
 # will look for and use one of 'sudo', 'doas', or 'ssu' (in that order). Also
 # assumes the syntax is similar to that of 'sudo'.
 # su_command = "doas"
 
-# Specify a different cache directory for builds. If this is not set, arc will
-# use ~/.cache/arc by default.
-# cache_dir = "/tmp/arc"
+# Specify a different cache directory for builds. If this is not set, moss will
+# use ~/.cache/moss by default.
+# cache_dir = "/tmp/moss"
 
 --------------------------------------------------------------------------------
 
 
 If you decided to install the repos to a different location, edit these lines in
-/etc/arc.toml:
+/etc/moss.toml:
 
 --------------------------------------------------------------------------------
 
@@ -373,7 +402,7 @@ If you decided to install the repos to a different location, edit these lines in
 --------------------------------------------------------------------------------
 
 
-See [@/wiki/arc](/wiki/arc) to learn more about configuring arc.
+See [@/wiki/moss](/wiki/moss) to learn more about configuring moss.
 
 
 === Rebuild the system (again) $[030]
@@ -429,7 +458,7 @@ Run the following to rebuild all packages (and install some new ones):
 
 --------------------------------------------------------------------------------
 
-  # arc b arc binutils bison busybox certs flex gcc git gmp \\
+  # moss b binutils bison busybox certs flex gcc git gmp \\
     linux-headers m4 make mpc mpfr musl rustup zlib
 
 --------------------------------------------------------------------------------
@@ -482,6 +511,12 @@ provided in the kernel. Some of this firmware can be found at this mirror:
   https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
 
 
+Alternatively, Linux From Scratch provides a convenient way to download the
+latest version of each firmware blob:
+
+  https://anduin.linuxfromscratch.org/BLFS/linux-firmware/
+
+
 Other firmware, such as Intel Microcode, may need to be obtained from other
 sources. See [@/wiki/kernel](/wiki/kernel) for more detailed info on selecting and
 obtaining the correct firmware for your hardware.
@@ -505,11 +540,11 @@ to compile the kernel. Install them now:
 
 --------------------------------------------------------------------------------
 
-  # arc b libelf pkgconf
+  # moss b libelf pkgconf
 
   For menuconfig support (highly recommended):
 
-  # arc b ncurses
+  # moss b ncurses
 
 --------------------------------------------------------------------------------
 
@@ -636,7 +671,7 @@ with some files unique to Tin Can Linux. Install it with the following:
 
 --------------------------------------------------------------------------------
 
-  # arc b tincan-base
+  # moss b tincan-base
 
 --------------------------------------------------------------------------------
 
@@ -648,7 +683,7 @@ it with this command:
 
 --------------------------------------------------------------------------------
 
-  # arc b limine
+  # moss b limine
 
 --------------------------------------------------------------------------------
 
@@ -660,7 +695,7 @@ disks with 'fsck':
 
 --------------------------------------------------------------------------------
 
-  # arc b e2fsprogs dosfstools
+  # moss b e2fsprogs dosfstools
 
 --------------------------------------------------------------------------------
 
@@ -671,7 +706,7 @@ Again, these are not strictly required, but I assume most people want WiFi:
 
 --------------------------------------------------------------------------------
 
-  # arc b dhcpcd openresolv libudev-zero eiwd
+  # moss b dhcpcd openresolv libudev-zero eiwd
 
 --------------------------------------------------------------------------------
 
@@ -682,7 +717,7 @@ These are some other utilities that you may find useful:
 
 --------------------------------------------------------------------------------
 
-  # arc b ssu
+  # moss b ssu
 
 --------------------------------------------------------------------------------
 
@@ -786,6 +821,15 @@ cgroup2        /sys/fs/cgroup  cgroup2   nosuid,noexec,nodev  0     0
 --------------------------------------------------------------------------------
 
 
+Also create /etc/hostname:
+
+--------------------------------------------------------------------------------
+
+  # echo "tincan" > /etc/hostname
+
+--------------------------------------------------------------------------------
+
+
 === Install Tin Can to disk $[063]
 
 To install your shiny new distro, simply copy the contents of sysroot/ to /mnt:
@@ -832,12 +876,12 @@ Next, create /boot/limine.conf with this content:
 
 --------------------------------------------------------------------------------
 
-  timeout: 5
+timeout: 5
 
-  /Tin Can Linux
-      protocol: linux
-      kernel_path: boot():/vmlinuz-[VERSION]
-      kernel_cmdline: root=UUID=xxxx-xx--xxx ro loglevel=3 rootwait quiet
+/Tin Can Linux
+    protocol: linux
+    kernel_path: boot():/vmlinuz-[VERSION]
+    kernel_cmdline: root=UUID=xxxx-xx--xxx ro loglevel=3 rootwait quiet
 
 --------------------------------------------------------------------------------
 
@@ -902,13 +946,26 @@ Avoid accidentally wrecking your system (not that it will stop dedicated users):
 --------------------------------------------------------------------------------
 
 
-=== Graphical environment $[073]
+=== Connect to WiFi $[073]
+
+The internet is a great place! Connect to your WiFi network:
+
+--------------------------------------------------------------------------------
+
+  # printf 'passwd' | iwd_passphrase 'ssid' > /var/lib/iwd/'ssid.psk'
+
+--------------------------------------------------------------------------------
+
+Replace 'passwd' and 'ssid' with your WiFi password and name, respectively.
+
+
+=== Graphical environment $[074]
 
 Install the wayland libraries (this will get everything):
 
 --------------------------------------------------------------------------------
 
-  # arc b wlroots
+  # moss b wlroots
 
 --------------------------------------------------------------------------------
 
@@ -926,7 +983,7 @@ And to install a minimal web browser:
 
 --------------------------------------------------------------------------------
 
-  # arc b netsurf
+  # moss b netsurf
 
 --------------------------------------------------------------------------------
 
@@ -935,7 +992,7 @@ Additional information about installing a graphical environment can be found at
 [@/wiki/graphical](/wiki/graphical).
 
 
-=== Get counted $[074]
+=== Get counted $[075]
 
 Now that you're a user of Tin Can Linux, head on over to [@/register](/register) to get
 counted and immortalize yourself in the Tin Can Linux user list! You can also

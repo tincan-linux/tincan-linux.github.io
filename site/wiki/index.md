@@ -9,8 +9,8 @@ proper documentation for all this stuff.
 === Distribution
 ================
 
-  [@/wiki/arc](/wiki/arc)
   [@/wiki/filesystem](/wiki/filesystem)
+  [@/wiki/moss](/wiki/moss)
   [@/wiki/repos](/wiki/repos)
 
 

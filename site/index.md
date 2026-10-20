@@ -24,9 +24,9 @@ time as the project grows and develops:
 === Package Management
 ======================
 
-Tin Can Linux uses the Arc package manager (also a creation of my own). It
+Tin Can Linux uses the Moss package manager (also a creation of my own). It
 functions somewhat similarly to the kiss package manager but is notably
-different in several ways. Read more about it at [@/wiki/arc](/wiki/arc).
+different in several ways. Read more about it at [@/wiki/moss](/wiki/moss).
 
 
 === Release Model

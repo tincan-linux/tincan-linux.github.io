@@ -1,11 +1,11 @@
 +------------------------------------------------------------------------------+
-|  Arc, a tiny Linux Package Manager.                                          |
+|  Moss, a tiny Linux Package Manager.                                         |
 +------------------------------------------------------------------------------+
 
-Arc is a tiny, lightning-fast package manager written by me (AVS Origami). It is
-the package manager used by Tin Can Linux.
+Moss (formerly arc) is a tiny, lightning-fast package manager written by me
+(AVS Origami). It is the package manager used by Tin Can Linux.
 
-Repository: [$/avs-origami/arc](https://github.com/avs-origami/arc)
+Repository: [$/avs-origami/moss](https://github.com/avs-origami/moss)
 
 
 === Contents
@@ -29,20 +29,19 @@ Repository: [$/avs-origami/arc](https://github.com/avs-origami/arc)
 === Usage $[010]
 ===============
 
-To use arc, invoke it along with one of the available actions (or run without
+To use moss, invoke it along with one of the available actions (or run without
 arguments to print out this help message):
 
 --------------------------------------------------------------------------------
 
-  $ arc
+  $ moss
 
-      .---.
-     /\\  \\ \\   ___ ____
-    /  \\ -\\ \\_/__ / __/
-   / / /\\  \\ \\  \\_\\ |__.
-  /__./  \\.___\\    \\___/
+  /\\/\\   ___  ___ ___ 
+ /    \\ / _ \\/ __/ __|
+/ /\\/\\ \\ (_) \\__ \\__ \\
+\\/    \\/\\___/|___/___/
 
-  Usage: arc [s/v/y][b/c/d/f/h/i/l/n/p/r/s/u/v] [pkg]...
+  Usage: moss [s/v/y][b/c/d/f/h/i/l/n/p/r/s/u/v] [pkg]...
     -> b / build     Build packages
     -> c / checksum  Generate checksums
     -> d / download  Download sources
@@ -51,7 +50,7 @@ arguments to print out this help message):
     -> i / install   Install built packages
     -> l / list      List installed packages
     -> n / new       Create a blank package
-    -> p / purge     Purge the package cache ($HOME/.cache/arc)
+    -> p / purge     Purge the package cache ($HOME/.cache/moss)
     -> r / remove    Remove packages
     -> s / sync      Sync remote repositories
     -> u / upgrade   Upgrade all packages
@@ -69,7 +68,7 @@ arguments to print out this help message):
 Notes on usage:
 
   - Each action can be invoked by typing out the whole action or by using the
-    single letter alias (e.g. 'arc build gcc' is equivalent to 'arc b gcc').
+    single letter alias (e.g. 'moss build gcc' is equivalent to 'moss b gcc').
 
   - For actions that involve operating on packages, all arguments following the
     action are treated as packages to be operated on.
@@ -84,17 +83,17 @@ Some usage examples:
 
   Installs the 'gcc' package.
 
-  $ arc b gcc
+  $ moss b gcc
 
   Installs the 'gcc' and 'zlib' packages, and prints all output from the build
   script to the terminal (output will still be stored to the log files as well).
 
-  $ arc vb gcc zlib
+  $ moss vb gcc zlib
 
   Sync the local repositories with upstream and perform a full system upgrade,
   automatically bypassing all confirmation prompts.
 
-  $ arc syu
+  $ moss syu
 
 --------------------------------------------------------------------------------
 
@@ -105,7 +104,7 @@ Sometimes, a file will be provided by multiple packages (for example, the
 program 'clear' is provided by both 'busybox' and 'ncurses'). In this case the
 user must manually select which package should provide the file.
 
-If a conflict is detected, arc will provide a [Y/n] prompt asking whether to
+If a conflict is detected, moss will provide a [Y/n] prompt asking whether to
 [Y] use the new provider or [n] keep the current provider. Any answer not
 starting with 'n' or 'N' will be treated as 'Y'.
 
@@ -118,7 +117,7 @@ state which provider to use.
 === Package format $[020]
 ========================
 
-Arc packages consist of two main files: 'package.toml' and 'build'. At a high
+Moss packages consist of two main files: 'package.toml' and 'build'. At a high
 level, these files serve the following functions:
 
   - The file 'package.toml' contains all package metadata (version, maintainer,
@@ -143,10 +142,10 @@ package (which I will use as an example throughout this section):
 
 --------------------------------------------------------------------------------
 
-Arc provides functionality to create a new package following this template; just
-run 'arc new [name]' and it will create a new package called '[name]' in the
-current directory containing a 'package.toml' and 'build'. These files must then
-be edited according to the software being packaged.
+Moss provides functionality to create a new package following this template;
+just run 'moss new [name]' and it will create a new package called '[name]' in
+the current directory containing a 'package.toml' and 'build'. These files must
+then be edited according to the software being packaged.
 
 
 === Package.toml $[021]
@@ -196,7 +195,7 @@ And an explanation of each of these fields:
         locally (patches, service files, etc). Some notes about sources:
 
           - Tarballs (*.tar.*) are automatically extracted to the build
-            directory ($HOME/.cache/arc/build/[pkg]/src). This can be
+            directory ($HOME/.cache/moss/build/[pkg]/src). This can be
             overridden by prefixing the url with 'tar+', in which case the
             tarball will be copied as-is to the build directory.
 
@@ -211,11 +210,11 @@ And an explanation of each of these fields:
             '0b92f76d...' is the checksum for 'musl.patch').
 
           - Checksums are used to verify the integrity of downloaded files. If
-            the checksums do not match, arc will assume that the file is
-            corrupted. To re-download the sources, use 'arc d [pkg]'.
+            the checksums do not match, moss will assume that the file is
+            corrupted. To re-download the sources, use 'moss d [pkg]'.
 
-          - The checksums can be generated by running 'arc c' inside the package
-            directory.
+          - The checksums can be generated by running 'moss c' inside the
+            package directory.
 
       - strip: this key can optionally be set to 'false' to disable stripping
         binaries for a certain package. This is used to avoid breaking certain
@@ -243,7 +242,7 @@ The build script is an executable file (typically a shell script) that is run
 by the package manager to build a package. It is executed from within the
 build directory and provided these arguments:
 
-  - $1 is the absolute path to the destdir ($HOME/.cache/arc/build/[pkg]/dest).
+  - $1 is the absolute path to the destdir ($HOME/.cache/moss/build/[pkg]/dest).
   - $2 is the package version.
 
 
@@ -292,14 +291,14 @@ As an example, this is what the build script for 'libelf' looks like:
 === Configuration $[030]
 =======================
 
-Arc is configured via a configuration file located at /etc/arc.toml. Here is an
-explanation of the available configuration keys:
+Moss is configured via a configuration file located at /etc/moss.toml. Here is
+an explanation of the available configuration keys:
 
 
 === Repo search path $[031]
 
-The key 'path' is an array that defines the directories that arc should look for
-packages in. It looks like this by default:
+The key 'path' is an array that defines the directories that moss should look
+for packages in. It looks like this by default:
 
 --------------------------------------------------------------------------------
 
@@ -348,7 +347,7 @@ And you should now be able to do the following:
 
 --------------------------------------------------------------------------------
 
-  $ arc b package1 package2 package3
+  $ moss b package1 package2 package3
 
 --------------------------------------------------------------------------------
 
@@ -359,22 +358,22 @@ Some information about the other available configuration keys:
 
   - verbose_builds: if this is set to true, build output for _all_ packages will
     be printed to stdout. If false, you can still enable build output by adding
-    the 'v' flag to a build command (e.g. arc vb gcc). This key is required.
+    the 'v' flag to a build command (e.g. moss vb gcc). This key is required.
 
-  - strip: if this is set to true, arc will strip unneeded symbols from binary
-    files, and if set false, arc will not strip symbols from binaries. Specific
+  - strip: if this is set to true, moss will strip unneeded symbols from binary
+    files, and if set false, moss will not strip symbols from binaries. Specific
     packages can override this by setting meta.strip in package.toml. This key
     is required.
 
-  - su_command: by default, arc will look for one of three commands to escalate
+  - su_command: by default, moss will look for one of three commands to escalate
     privileges, in this order: 'sudo', 'doas', 'ssu'. If you want to use a
     different command for privilege escalation, you can provide that here; just
     note that you cannot use this to pass additional arguments to the privilege
     escalation utility. This key is optional.
 
-  - cache_dir: arc normally performs builds and stores cache files in
-    ~/.cache/arc but if you want a different location to be used (e.g. /tmp/arc)
-    you can set that here. This key is optional.
+  - cache_dir: moss normally performs builds and stores cache files in
+    ~/.cache/moss but if you want a different location to be used (e.g.
+    /tmp/moss) you can set that here. This key is optional.
 
 
 === APPENDIX $[100]
