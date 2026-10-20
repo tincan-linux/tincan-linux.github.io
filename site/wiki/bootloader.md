@@ -101,7 +101,7 @@ A customized config file might therefore look something like this:
 
   timeout: 5
   quiet: yes
-  wallpaper: boot()/wallpaper.png
+  wallpaper: boot():/wallpaper.png
 
   /Tin Can Linux
       protocol: linux
